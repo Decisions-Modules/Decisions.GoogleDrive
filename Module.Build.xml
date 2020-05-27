@@ -6,7 +6,15 @@
     <SLCoreDll></SLCoreDll>
     <SLFrontendFrameworkDll></SLFrontendFrameworkDll>
     <SilverLightsSDKAssembliesPath></SilverLightsSDKAssembliesPath>
-    <References/>
+    <CopyReferenceToModule>true</CopyReferenceToModule>
+	<References>
+      <string>.\Decisions.GoogleDrive\bin\Debug\Google.Apis.Auth.dll</string>
+      <string>.\Decisions.GoogleDrive\bin\Debug\Google.Apis.Auth.PlatformServices.dll</string>
+      <string>.\Decisions.GoogleDrive\bin\Debug\Google.Apis.Core.dll</string>
+      <string>.\Decisions.GoogleDrive\bin\Debug\Google.Apis.dll</string>
+      <string>.\Decisions.GoogleDrive\bin\Debug\Google.Apis.Drive.v3.dll</string>
+      <string>.\Decisions.GoogleDrive\bin\Debug\Google.Apis.PlatformServices.dll</string>
+	</References>
   </Clients>
   <Resources NoComponents="true">
     <ServicesDlls>
@@ -30,6 +38,7 @@
     </MySqlScript>
     <OracleScript>
     </OracleScript>
+    <FileResources>    </FileResources>
   </Resources>
   <Description>Module to manage files and folders in GoogleDrive.</Description>
 </CreateModuleInfo>
