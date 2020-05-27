@@ -24,14 +24,14 @@ namespace Decisions.GoogleDriveTests
         [TestCleanupAttribute]
         public void CleanupTests()
         {
-            FolderSteps.DeleteFolder(credentional, testFolder);
+            FolderSteps.DeleteFolder(credentional, testFolder.Id);
         }
 
         [TestMethod]
         public void ListFoldersTest()
         {
             var rootFileList = FolderSteps.GetFolderList(credentional, null);
-            var testFolderFileList = FolderSteps.GetFolderList(credentional, testFolder);
+            var testFolderFileList = FolderSteps.GetFolderList(credentional, testFolder.Id);
 
             Assert.IsTrue(rootFileList.Length > 0 || testFolderFileList.Length > 0);
         }
@@ -42,13 +42,13 @@ namespace Decisions.GoogleDriveTests
             GoogleDriveFolder createdFolder = null;
             try
             {
-                createdFolder = FolderSteps.CreateFolder(credentional, testFolder, TestData.TestFolderName);
+                createdFolder = FolderSteps.CreateFolder(credentional, testFolder.Id, TestData.TestFolderName);
                 Assert.IsNotNull(createdFolder);
             }
             finally
             {
                 if (createdFolder != null)
-                    FolderSteps.DeleteFolder(credentional, createdFolder);
+                    FolderSteps.DeleteFolder(credentional, createdFolder.Id);
             }
 
         }
@@ -60,12 +60,12 @@ namespace Decisions.GoogleDriveTests
             GoogleDriveFolder createdFolder = null;
             try
             {
-                createdFolder = FolderSteps.CreateFolder(credentional, testFolder, TestData.TestFolderName);
+                createdFolder = FolderSteps.CreateFolder(credentional, testFolder.Id, TestData.TestFolderName);
                 Assert.IsNotNull(createdFolder);
 
-                var folderListBefore = FolderSteps.GetFolderList(credentional, testFolder);
-                FolderSteps.DeleteFolder(credentional, createdFolder);
-                var folderListAfter = FolderSteps.GetFolderList(credentional, testFolder);
+                var folderListBefore = FolderSteps.GetFolderList(credentional, testFolder.Id);
+                FolderSteps.DeleteFolder(credentional, createdFolder.Id);
+                var folderListAfter = FolderSteps.GetFolderList(credentional, testFolder.Id);
 
                 Assert.AreEqual(1, folderListBefore.Length - folderListAfter.Length);
             }
@@ -74,7 +74,7 @@ namespace Decisions.GoogleDriveTests
                 try
                 {
                     if (createdFolder != null)
-                        FolderSteps.DeleteFolder(credentional, createdFolder);
+                        FolderSteps.DeleteFolder(credentional, createdFolder.Id);
                 }
                 catch { }
             }
@@ -84,14 +84,14 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void GetPermsTest()
         {
-            var perms = FolderSteps.GetFolderPermissions(credentional, testFolder);
+            var perms = FolderSteps.GetFolderPermissions(credentional, testFolder.Id);
             Assert.IsTrue(perms.Any(x => x.Role == GoogleDriveRole.owner && x.Type == GoogleDrivePermType.user));
         }
 
         [TestMethod]
         public void SetPermsTest()
         {
-            var perm = FolderSteps.SetFolderPermissions(credentional, testFolder, new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer));
+            var perm = FolderSteps.SetFolderPermissions(credentional, testFolder.Id, new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer));
             Assert.IsTrue(perm.Id != "");
         }
 

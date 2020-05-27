@@ -16,8 +16,7 @@ namespace DriveLibraryTests
         [TestMethod]
         public void ListFoldersTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFolder[] files = GoogleDrive.GetFolders(connection);
@@ -29,15 +28,14 @@ namespace DriveLibraryTests
         [TestMethod]
         public void ListSubfoldersTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
-            GoogleDriveFolder[] files = GoogleDrive.GetFolders(connection);
+            GoogleDriveFolder[] folders = GoogleDrive.GetFolders(connection);
 
-            Assert.IsInstanceOfType(files, typeof(GoogleDriveFolder[]));
+            Assert.IsInstanceOfType(folders, typeof(GoogleDriveFolder[]));
 
-            var subfolders = GoogleDrive.GetFolders(connection, files[1]);
+            var subfolders = GoogleDrive.GetFolders(connection, folders[0].Id);
 
             Assert.IsInstanceOfType(subfolders, typeof(GoogleDriveFolder[]));
         }
@@ -45,8 +43,7 @@ namespace DriveLibraryTests
         [TestMethod]
         public void CreateFolderTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFolder newFolder = GoogleDrive.CreateFolder(connection, "TEST FOLDER 123");
@@ -63,8 +60,7 @@ namespace DriveLibraryTests
         [TestMethod]
         public void DeleteFolderTest()
         { 
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFolder[] files = GoogleDrive.GetFolders(connection);
@@ -73,14 +69,13 @@ namespace DriveLibraryTests
             Assert.IsTrue(files.Length > 0);
 
             var folder = GoogleDrive.CreateFolder(connection, "OkFolder");
-            GoogleDrive.DeleteFolder(connection, folder);
+            GoogleDrive.DeleteFolder(connection, folder.Id);
         }
 
         [TestMethod]
         public void GetPermsTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFolder[] files = GoogleDrive.GetFolders(connection);
@@ -88,7 +83,7 @@ namespace DriveLibraryTests
             Assert.IsInstanceOfType(files, typeof(GoogleDriveFolder[]));
             Assert.IsTrue(files.Length > 0);
 
-            var perms = GoogleDrive.GetFolderPermissions(connection, files[0]);
+            var perms = GoogleDrive.GetFolderPermissions(connection, files[0].Id);
 
             Assert.IsTrue(perms.Any(x => x.Role == GoogleDriveRole.owner && x.Type == GoogleDrivePermType.user));
         }
@@ -96,8 +91,7 @@ namespace DriveLibraryTests
         [TestMethod]
         public void SetPermsTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFolder[] files = GoogleDrive.GetFolders(connection);
@@ -105,8 +99,8 @@ namespace DriveLibraryTests
             Assert.IsInstanceOfType(files, typeof(GoogleDriveFolder[]));
             Assert.IsTrue(files.Length > 0);
 
-            var perm = GoogleDrive.SetFolderPermissions(connection, files[0], new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer));
-            GoogleDrive.SetFolderPermissions(connection, files[0], new GoogleDrivePermission(null, null, GoogleDrivePermType.anyone, GoogleDriveRole.reader) );
+            var perm = GoogleDrive.SetFolderPermissions(connection, files[0].Id, new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer));
+            GoogleDrive.SetFolderPermissions(connection, files[0].Id, new GoogleDrivePermission(null, null, GoogleDrivePermType.anyone, GoogleDriveRole.reader) );
 
             Assert.IsTrue(perm.Id != "");
             Debug.WriteLine("Set perm to folder " + files[0].Name);

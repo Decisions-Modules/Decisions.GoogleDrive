@@ -36,14 +36,14 @@ namespace Decisions.GoogleDriveTests
         public void CleanupTests()
         {
             File.Delete(TestFileFullName);
-            FolderSteps.DeleteFolder(credentional, testFolder);
+            FolderSteps.DeleteFolder(credentional, testFolder.Id);
         }
 
         [TestMethod]
         public void ListFilesTest()
         {
             var rootFileList=FileSteps.GetFileList(credentional, null);
-            var testFolderFileList = FileSteps.GetFileList(credentional, testFolder);
+            var testFolderFileList = FileSteps.GetFileList(credentional, testFolder.Id);
 
             Assert.IsTrue(rootFileList.Length > 0 || testFolderFileList.Length > 0);
         }
@@ -51,30 +51,30 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void ListFilesInFolderTest()
         {
-            var file = FileSteps.UploadFile(credentional, testFolder, TestFileFullName);
+            var file = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
 
             try
             {
-                var testFolderFileList = FileSteps.GetFileList(credentional, testFolder);
+                var testFolderFileList = FileSteps.GetFileList(credentional, testFolder.Id);
                 Assert.IsTrue(testFolderFileList.Length > 0);
             }
             finally {
-                FileSteps.DeleteFile(credentional, file);
+                FileSteps.DeleteFile(credentional, file.Id);
             }
         }
 
         [TestMethod]
         public void DeleteFileTest()
         {
-            var file = FileSteps.UploadFile(credentional, testFolder, TestFileFullName);
+            var file = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
             try
             {
-                var fileListBefore = FileSteps.GetFileList(credentional, testFolder);
+                var fileListBefore = FileSteps.GetFileList(credentional, testFolder.Id);
                 Assert.IsTrue(fileListBefore.Length > 0);
 
-                FileSteps.DeleteFile(credentional, file);
+                FileSteps.DeleteFile(credentional, file.Id);
 
-                var fileListAfter = FileSteps.GetFileList(credentional, testFolder);
+                var fileListAfter = FileSteps.GetFileList(credentional, testFolder.Id);
 
                 Assert.AreEqual(1, fileListBefore.Length - fileListAfter.Length);
             }
@@ -82,7 +82,7 @@ namespace Decisions.GoogleDriveTests
             {
                 try
                 {
-                    FileSteps.DeleteFile(credentional, file);
+                    FileSteps.DeleteFile(credentional, file.Id);
                 }
                 catch { }
             }
@@ -91,42 +91,42 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void GetPermsTest()
         {
-            var file = FileSteps.UploadFile(credentional, testFolder, TestFileFullName);
+            var file = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
             try
             {
-                var permissions = FileSteps.GetFilePermissions(credentional, file);
+                var permissions = FileSteps.GetFilePermissions(credentional, file.Id);
                 Assert.IsTrue(permissions.Length > 0);
             }
             finally
             {
-                FileSteps.DeleteFile(credentional, file);
+                FileSteps.DeleteFile(credentional, file.Id);
             }
         }
 
         [TestMethod]
         public void SetPermsTest()
         {
-            var file = FileSteps.UploadFile(credentional, testFolder, TestFileFullName);
+            var file = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
             try
             {
                 var newPermission = new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer);
-                var permission = FileSteps.SetFilePermissions(credentional, file, newPermission);
+                var permission = FileSteps.SetFilePermissions(credentional, file.Id, newPermission);
                 Assert.IsTrue(permission.Id != "");
             }
             finally
             {
-                FileSteps.DeleteFile(credentional, file);
+                FileSteps.DeleteFile(credentional, file.Id);
             }
         }
 
         [TestMethod]
         public void DownloadFileTest()
         {
-            var file = FileSteps.UploadFile(credentional, testFolder, TestFileFullName);
+            var file = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
             string localFileName = TestFileFullName + "_";
             try
             {
-                var fileListAfter = FileSteps.DownloadFile(credentional, file, localFileName);
+                var fileListAfter = FileSteps.DownloadFile(credentional, file.Id, localFileName);
                 Assert.IsTrue(File.Exists(localFileName));
 
                 var origLen = new System.IO.FileInfo(TestFileFullName).Length;
@@ -136,23 +136,23 @@ namespace Decisions.GoogleDriveTests
             }
             finally
             {
-                FileSteps.DeleteFile(credentional, file);
+                FileSteps.DeleteFile(credentional, file.Id);
             }
         }
 
         [TestMethod]
         public void UploadFileTest()
         {
-            GoogleDriveFile file =null;
+            GoogleDriveFile file = null;
             try
             {
-                file = FileSteps.UploadFile(credentional, testFolder, TestFileFullName);
+                file = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
                 Assert.IsNotNull(file); 
             }
             finally
             {
                 if(file != null)
-                  FileSteps.DeleteFile(credentional, file);
+                  FileSteps.DeleteFile(credentional, file.Id);
             }
         }
 

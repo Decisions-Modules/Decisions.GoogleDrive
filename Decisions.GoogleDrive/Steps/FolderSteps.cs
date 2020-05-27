@@ -11,36 +11,42 @@ namespace DriveLibrary.Steps
     [AutoRegisterMethodsOnClass(true, "Integration/Google Drive/Folders")]
     public static class FolderSteps
     {
-        public static GoogleDriveFolder[] GetFolderList(GoogleDriveCredential credential, GoogleDriveFolder folder)
+        public static bool DoesFolderExist(GoogleDriveCredential credential, string googleDriveFolderId)
         {
             var connection = Connection.Create(credential);
-            var folders = GoogleDrive.GetFolders(connection, folder);
+            return GoogleDrive.DoesFolderExist(connection, googleDriveFolderId);
+        }
+
+        public static GoogleDriveFolder[] GetFolderList(GoogleDriveCredential credential, string googleDriveFolderId)
+        {
+            var connection = Connection.Create(credential);
+            var folders = GoogleDrive.GetFolders(connection, googleDriveFolderId);
             return folders;
         }
 
-        public static GoogleDriveFolder CreateFolder(GoogleDriveCredential credential, GoogleDriveFolder parentFolder, string newFolderName)
+        public static GoogleDriveFolder CreateFolder(GoogleDriveCredential credential, string parentGoogleDriveFolderId, string newFolderName)
         {
             var connection = Connection.Create(credential);
-            GoogleDriveFolder newFolder = GoogleDrive.CreateFolder(connection, newFolderName, parentFolder);
+            GoogleDriveFolder newFolder = GoogleDrive.CreateFolder(connection, newFolderName, parentGoogleDriveFolderId);
             return newFolder;
         }
 
-        public static void DeleteFolder(GoogleDriveCredential credential, GoogleDriveFolder folder)
+        public static void DeleteFolder(GoogleDriveCredential credential, string parentGoogleDriveFolderId)
         {
             var connection = Connection.Create(credential);
-            var res = GoogleDrive.DeleteFolder(connection, folder);
+            var res = GoogleDrive.DeleteFolder(connection, parentGoogleDriveFolderId);
         }
 
-        public static GoogleDrivePermission[] GetFolderPermissions(GoogleDriveCredential credential, GoogleDriveFolder folder)
+        public static GoogleDrivePermission[] GetFolderPermissions(GoogleDriveCredential credential, string parentGoogleDriveFolderId)
         {
             var connection = Connection.Create(credential);
-            return GoogleDrive.GetFolderPermissions(connection, folder);
+            return GoogleDrive.GetFolderPermissions(connection, parentGoogleDriveFolderId);
         }
 
-        public static GoogleDrivePermission SetFolderPermissions(GoogleDriveCredential credential, GoogleDriveFolder folder, GoogleDrivePermission permission)
+        public static GoogleDrivePermission SetFolderPermissions(GoogleDriveCredential credential, string parentGoogleDriveFolderId, GoogleDrivePermission permission)
         {
             var connection = Connection.Create(credential);
-            var res = GoogleDrive.SetFolderPermissions(connection, folder, permission);
+            var res = GoogleDrive.SetFolderPermissions(connection, parentGoogleDriveFolderId, permission);
             return res;
         }
 

@@ -15,9 +15,7 @@ namespace DriveLibraryTests
    //[TestClass]
     public class FileTests
     {
-
         string TestFileFullName { get { return TestData.LocalTestDir + TestData.TestFileName; } }
-
 
         [TestInitialize]
         public void InitTests()
@@ -36,8 +34,7 @@ namespace DriveLibraryTests
         [TestMethod]
         public void ListFilesTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection =  Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFile[] files = GoogleDrive.GetFiles(connection);
@@ -50,8 +47,7 @@ namespace DriveLibraryTests
         public void ListFilesInFolderTest()
         {
 
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFolder[] folders = GoogleDrive.GetFolders(connection);
@@ -59,7 +55,7 @@ namespace DriveLibraryTests
             Assert.IsInstanceOfType(folders, typeof(GoogleDriveFolder[]));
             Assert.IsTrue(folders.Length > 0);
 
-            var files = GoogleDrive.GetFiles(connection, folders[1]);
+            var files = GoogleDrive.GetFiles(connection, folders[0].Id);
 
             Assert.IsInstanceOfType(files, typeof(GoogleDriveFile[]));
             Assert.IsTrue(files.Length > 0);
@@ -68,12 +64,11 @@ namespace DriveLibraryTests
         [TestMethod]
         public void DeleteFileTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
             UploadFileTest();
             var file = (GoogleDrive.GetFiles(connection)).First(x => x.Name == TestData.TestFileName);
-            GoogleDrive.DeleteFile(connection, file);
+            GoogleDrive.DeleteFile(connection, file.Id);
             file = (GoogleDrive.GetFiles(connection)).FirstOrDefault(x => x.Name == TestData.TestFileName);
             Assert.IsNull(file);
         }
@@ -83,25 +78,7 @@ namespace DriveLibraryTests
         {
             UploadFileTest();
 
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
-            Assert.IsTrue(connection.IsConnected());
-
-            GoogleDriveFile[] files = GoogleDrive.GetFiles(connection);
-
-            Assert.IsInstanceOfType(files, typeof(GoogleDriveFile[]));
-            Assert.IsTrue(files.Length > 0);
-
-            var perms = GoogleDrive.GetFilePermissions(connection, files.First(x => x.Name == TestData.TestFileName));
-
-            Assert.IsTrue(perms.Any(x => x.Role == GoogleDriveRole.owner && x.Type == GoogleDrivePermType.user));
-        }
-
-        [TestMethod]
-        public void SetPermsTest()
-        {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFile[] files = GoogleDrive.GetFiles(connection);
@@ -110,8 +87,25 @@ namespace DriveLibraryTests
             Assert.IsTrue(files.Length > 0);
 
             var file = files.First(x => x.Name == TestData.TestFileName);
-            var perm = GoogleDrive.SetFilePermissions(connection, file, new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer) );
-            GoogleDrive.SetFilePermissions(connection, file, new GoogleDrivePermission(null, null, GoogleDrivePermType.anyone, GoogleDriveRole.reader) );
+            var perms = GoogleDrive.GetFilePermissions(connection, file.Id);
+
+            Assert.IsTrue(perms.Any(x => x.Role == GoogleDriveRole.owner && x.Type == GoogleDrivePermType.user));
+        }
+
+        [TestMethod]
+        public void SetPermsTest()
+        {
+            Connection connection = Connection.Create(TestData.GetCredential());
+            Assert.IsTrue(connection.IsConnected());
+
+            GoogleDriveFile[] files = GoogleDrive.GetFiles(connection);
+
+            Assert.IsInstanceOfType(files, typeof(GoogleDriveFile[]));
+            Assert.IsTrue(files.Length > 0);
+
+            var file = files.First(x => x.Name == TestData.TestFileName);
+            var perm = GoogleDrive.SetFilePermissions(connection, file.Id, new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer) );
+            GoogleDrive.SetFilePermissions(connection, file.Id, new GoogleDrivePermission(null, null, GoogleDrivePermType.anyone, GoogleDriveRole.reader) );
 
             Assert.IsTrue(perm.Id != "");
             Debug.WriteLine("Set perm to file " + file.Name);
@@ -123,8 +117,7 @@ namespace DriveLibraryTests
             UploadFileTest();
             File.Delete(TestFileFullName);
 
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFile[] files = GoogleDrive.GetFiles(connection);
@@ -135,7 +128,7 @@ namespace DriveLibraryTests
             var file = files.First(x => x.Name == TestData.TestFileName);
             using (FileStream fs = File.OpenWrite(TestFileFullName))
             {
-                var status = GoogleDrive.DownloadFile(connection, file, fs, progress =>
+                var status = GoogleDrive.DownloadFile(connection, file.Id, fs, progress =>
                 {
                     Debug.WriteLine("Progress: " + progress.BytesDownloaded);
                 });
@@ -148,8 +141,7 @@ namespace DriveLibraryTests
         [TestMethod]
         public void UploadFileTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             using (FileStream fs = File.OpenRead(TestFileFullName))
@@ -166,8 +158,7 @@ namespace DriveLibraryTests
         [TestMethod]
         public void UploadFileInSubFolderTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
             Assert.IsTrue(connection.IsConnected());
 
             GoogleDriveFolder[] folders = GoogleDrive.GetFolders(connection);
@@ -177,7 +168,7 @@ namespace DriveLibraryTests
 
             using (FileStream fs = File.OpenRead(TestFileFullName))
             {
-                var file = GoogleDrive.UploadFile(connection, fs, TestData.TestFileName, folders[0], progress =>
+                var file = GoogleDrive.UploadFile(connection, fs, TestData.TestFileName, folders[0].Id, progress =>
                 {
                     Debug.WriteLine("Progress: " + progress.BytesSent);
                 });

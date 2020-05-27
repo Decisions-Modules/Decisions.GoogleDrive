@@ -8,20 +8,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DriveLibraryTests
 {
-    // [TestClass]
+     [TestClass]
     public class ConnectionTests
     {
         [TestMethod]
-        [ExpectedException(typeof(InvalidDataException))]
+        [ExpectedException(typeof(System.ArgumentNullException))]
         public void NoClientSecretTest()
         {
             var credential = TestData.GetCredential();
             credential.ClientId = "";
             credential.ClientSecret = "";
 
-            Connection connection = new Connection();
-
-            connection.Connect(credential);
+            Connection connection = Connection.Create(credential);
         }
 
         [TestMethod]
@@ -31,16 +29,13 @@ namespace DriveLibraryTests
             var credential = TestData.GetCredential();
             credential.DataStore = "D:/Okeysdfd/sdfsdhgf/dsfsf";
 
-            Connection connection = new Connection();
-
-            connection.Connect(credential);
+            Connection connection = Connection.Create(credential);
         }
 
         [TestMethod]
         public void ConnectionTest()
         {
-            Connection connection = new Connection();
-            connection.Connect(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetCredential());
 
             Assert.IsTrue(connection.IsConnected());
         }

@@ -21,21 +21,23 @@ namespace Decisions.GoogleDrive
         private static readonly string ApplicationName = "Decisions.Google.Drive";
         private static readonly string UserIdentifier = "Decisions.Google.Drive";
 
-        public Connection()
+        private Connection()
         {
         }
  
         private UserCredential _credential;
         internal DriveService Service;
 
-        public void Connect(GoogleDriveCredential credential)
+        private void Connect(GoogleDriveCredential credential)
         {
             if(String.IsNullOrEmpty(credential.ClientId))
-                throw new ArgumentNullException("ClientID wasn't specified.");
-            if(credential.ClientSecret == "")
-                throw new InvalidDataException("ClientSecret wasn't specified.");
-            if(credential.DataStore == "" || !Directory.Exists(credential.DataStore))
-                throw new DirectoryNotFoundException("The DataStore directory is either invalid or wasn't found.");
+                throw new ArgumentNullException("ClientID", "ClientID wasn't specified.");
+            if(String.IsNullOrEmpty(credential.ClientSecret))
+                throw new ArgumentNullException("ClientSecret", "ClientSecret wasn't specified.");
+            if(String.IsNullOrEmpty(credential.DataStore))
+                throw new ArgumentNullException("DataStore", "DataStore wasn't specified.");
+            if ( !Directory.Exists(credential.DataStore))
+                throw new DirectoryNotFoundException($"{credential.DataStore} directory is either invalid or wasn't found.");
 
             _credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                 new ClientSecrets() {ClientId = credential.ClientId, ClientSecret = credential.ClientSecret},
@@ -53,7 +55,7 @@ namespace Decisions.GoogleDrive
 
         public bool IsConnected()
         {
-            if (_credential == null)
+            if (_credential == null || Service == null)
                 return false;
             return true;
         }
