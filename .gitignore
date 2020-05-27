@@ -1,5 +1,8 @@
 *.dll
 *.pdb
+*.zip
+
+Module.Modified.xml
 Decisions.GoogleDrive.TestSuite/bin/
 Decisions.GoogleDrive.TestSuite/obj/
 Decisions.GoogleDrive/bin/

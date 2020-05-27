@@ -28,10 +28,10 @@ namespace Decisions.GoogleDrive
         private UserCredential _credential;
         internal DriveService Service;
 
-        public void Connect(DriveCredential credential)
+        public void Connect(GoogleDriveCredential credential)
         {
-            if(credential.ClientId == "")
-                throw new InvalidDataException("ClientID wasn't specified.");
+            if(String.IsNullOrEmpty(credential.ClientId))
+                throw new ArgumentNullException("ClientID wasn't specified.");
             if(credential.ClientSecret == "")
                 throw new InvalidDataException("ClientSecret wasn't specified.");
             if(credential.DataStore == "" || !Directory.Exists(credential.DataStore))
@@ -58,7 +58,7 @@ namespace Decisions.GoogleDrive
             return true;
         }
 
-        public static Connection Create(DriveCredential credential)
+        public static Connection Create(GoogleDriveCredential credential)
         {
             Connection connection = new Connection();
             connection.Connect(credential);

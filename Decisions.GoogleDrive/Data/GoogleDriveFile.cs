@@ -10,43 +10,36 @@ using Google.Apis.Download;
 namespace Decisions.GoogleDrive
 {
     [DataContract]
-    public class DriveFolder
+    public class GoogleDriveFile
     {
        /* [IgnoreDataMember]
         private readonly Connection _connection;
 
         public bool Exists()
         {
-            return Drive.DoesFolderExist(_connection, this);
+            return Drive.DoesFileExist(_connection, this);
         }
         public void Delete()
         {
-            Drive.DeleteFolder(_connection, this);
+            Drive.DeleteFile(_connection, this);
         }
         public DrivePermission[] GetPermissions()
         {
-            return Drive.GetFolderPermissions(_connection, this);
+            return Drive.GetFilePermissions(_connection, this);
         }
         public DrivePermission SetPermissions(DrivePermType type, DriveRole role, string email = null)
         {
-            return Drive.SetFolderPermissions(_connection, this, type, role, email);
+            return Drive.SetFilePermissions(_connection, this, type, role, email);
         }
-        public DriveFile[] GetFiles()
+        public bool Download(Stream output, Action<IDownloadProgress> progressTracker = null)
         {
-            return Drive.GetFiles(_connection, this);
-        }
-        public DriveFolder[] GetFolders()
-        {
-            return Drive.GetFolders(_connection, this);
-        }
-        public DriveFolder CreateSubfolder(string name)
-        {
-            return Drive.CreateFolder(_connection, name, this);
+            return Drive.DownloadFile(_connection, this, output, progressTracker);
         }*/
-
-        internal DriveFolder(string id, string name, string desc, string link)
+        
+        
+        internal GoogleDriveFile(string id, string name, string desc, string link)
         {
-           // _connection = cnct;
+            //_connection = cnct;
             Id = id;
             Name = name;
             Description = desc;
@@ -61,5 +54,6 @@ namespace Decisions.GoogleDrive
         public readonly string Description;
         [DataMember]
         public readonly string SharingLink;
+
     }
 }

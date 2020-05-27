@@ -9,9 +9,9 @@ namespace Decisions.GoogleDriveTests
 {
     static class TestData
     {
-        public static DriveCredential GetCredential()
+        public static GoogleDriveCredential GetCredential()
         {
-            return new DriveCredential
+            return new GoogleDriveCredential
             {
                 ClientId = "your client id",
                 ClientSecret = "your client secret",

@@ -17,8 +17,8 @@ namespace Decisions.GoogleDriveTests
     {
         string TestFileFullName { get { return TestData.LocalTestDir + TestData.TestFileName; } }
 
-        private readonly DriveCredential credentional = TestData.GetCredential();
-        private DriveFolder testFolder;
+        private readonly GoogleDriveCredential credentional = TestData.GetCredential();
+        private GoogleDriveFolder testFolder;
 
         [TestInitialize]
         public void InitTests()
@@ -109,7 +109,7 @@ namespace Decisions.GoogleDriveTests
             var file = FileSteps.UploadFile(credentional, testFolder, TestFileFullName);
             try
             {
-                var newPermission = new DrivePermission(null, TestData.TestEmail, DrivePermType.user, DriveRole.writer);
+                var newPermission = new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer);
                 var permission = FileSteps.SetFilePermissions(credentional, file, newPermission);
                 Assert.IsTrue(permission.Id != "");
             }
@@ -143,7 +143,7 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void UploadFileTest()
         {
-            DriveFile file=null;
+            GoogleDriveFile file =null;
             try
             {
                 file = FileSteps.UploadFile(credentional, testFolder, TestFileFullName);

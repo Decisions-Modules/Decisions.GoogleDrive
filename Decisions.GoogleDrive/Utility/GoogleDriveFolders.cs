@@ -9,12 +9,10 @@ using Google.Apis.Drive.v3.Data;
 
 namespace Decisions.GoogleDrive
 {
-    public static partial class Drive
+    public static partial class GoogleDrive
     {
 
-
-
-        public static bool DoesFolderExist(Connection connection, DriveFolder folder)
+        public static bool DoesFolderExist(Connection connection, GoogleDriveFolder folder)
         {
             if (!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
@@ -30,7 +28,7 @@ namespace Decisions.GoogleDrive
             }
         }
 
-        public static DriveFolder[] GetFolders(Connection connection, DriveFolder folder = null)
+        public static GoogleDriveFolder[] GetFolders(Connection connection, GoogleDriveFolder folder = null)
         {
             string folderId = folder == null ? "root" : folder.Id;
 
@@ -48,11 +46,11 @@ namespace Decisions.GoogleDrive
                 fileList = listRequest.Execute();
                 files.AddRange(fileList.Files);
             }
-            DriveFolder[] tmp = files.Select(t => new DriveFolder(t.Id, t.Name, t.Description, t.WebViewLink)).ToArray();
+            GoogleDriveFolder[] tmp = files.Select(t => new GoogleDriveFolder(t.Id, t.Name, t.Description, t.WebViewLink)).ToArray();
             return tmp;
         }
 
-        public static DriveFolder CreateFolder(Connection connection, string name, DriveFolder root = null)
+        public static GoogleDriveFolder CreateFolder(Connection connection, string name, GoogleDriveFolder root = null)
         {
             string rootId = root == null ? "root" : root.Id;
 
@@ -63,10 +61,10 @@ namespace Decisions.GoogleDrive
             var action = connection.Service.Files.Create(fileMetaData);
             action.Fields = "id, name, mimeType, description, webViewLink";
             File file = action.Execute();
-            return new DriveFolder(file.Id, file.Name, file.Description, file.WebViewLink);
+            return new GoogleDriveFolder(file.Id, file.Name, file.Description, file.WebViewLink);
         }
 
-        public static string DeleteFolder(Connection connection, DriveFolder fldr)
+        public static string DeleteFolder(Connection connection, GoogleDriveFolder fldr)
         {
             if (!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
@@ -76,45 +74,45 @@ namespace Decisions.GoogleDrive
             return res;
         }
 
-        private static DriveRole TranslateRole(string role)
+        private static GoogleDriveRole TranslateRole(string role)
         {
             switch (role)
             {
                 case "owner":
-                    return DriveRole.owner;
+                    return GoogleDriveRole.owner;
                 case "organizer":
-                    return DriveRole.organizer;
+                    return GoogleDriveRole.organizer;
                 case "fileOrganizer":
-                    return DriveRole.fileOrganizer;
+                    return GoogleDriveRole.fileOrganizer;
                 case "writer":
-                    return DriveRole.writer;
+                    return GoogleDriveRole.writer;
                 case "commenter":
-                    return DriveRole.commenter;
+                    return GoogleDriveRole.commenter;
                 case "reader":
-                    return DriveRole.reader;
+                    return GoogleDriveRole.reader;
                 default:
-                    return DriveRole.unknown;
+                    return GoogleDriveRole.unknown;
             }
         }
 
-        private static DrivePermType TranslatePermType(string role)
+        private static GoogleDrivePermType TranslatePermType(string role)
         {
             switch (role)
             {
                 case "user":
-                    return DrivePermType.user;
+                    return GoogleDrivePermType.user;
                 case "group":
-                    return DrivePermType.group;
+                    return GoogleDrivePermType.group;
                 case "domain":
-                    return DrivePermType.domain;
+                    return GoogleDrivePermType.domain;
                 case "anyone":
-                    return DrivePermType.anyone;
+                    return GoogleDrivePermType.anyone;
                 default:
-                    return DrivePermType.unknown;
+                    return GoogleDrivePermType.unknown;
             }
         }
 
-        public static DrivePermission[] GetFolderPermissions(Connection connection, DriveFolder fldr)
+        public static GoogleDrivePermission[] GetFolderPermissions(Connection connection, GoogleDriveFolder fldr)
         {
             if (!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
@@ -123,19 +121,19 @@ namespace Decisions.GoogleDrive
             var response = req.Execute();
 
             if (response.Permissions == null)
-                return new DrivePermission[] { };
+                return new GoogleDrivePermission[] { };
 
-            return response.Permissions.Select(x => new DrivePermission(x.Id, x.EmailAddress, TranslatePermType(x.Type), TranslateRole(x.Role))).ToArray();
+            return response.Permissions.Select(x => new GoogleDrivePermission(x.Id, x.EmailAddress, TranslatePermType(x.Type), TranslateRole(x.Role))).ToArray();
         }
 
-        public static DrivePermission SetFolderPermissions(Connection connection, DriveFolder foldr, DrivePermission permission)/*DrivePermType type,
+        public static GoogleDrivePermission SetFolderPermissions(Connection connection, GoogleDriveFolder foldr, GoogleDrivePermission permission)/*DrivePermType type,
             DriveRole role, string email = null)*/
         {
             if (!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
-            if(permission.Type != DrivePermType.anyone && permission.Email == null)
+            if(permission.Type != GoogleDrivePermType.anyone && permission.Email == null)
                 throw new Exception("This permission type requires an email.");
-            if(permission.Type == DrivePermType.unknown || permission.Role == DriveRole.unknown)
+            if(permission.Type == GoogleDrivePermType.unknown || permission.Role == GoogleDriveRole.unknown)
                 throw new Exception("Invalid arguments passed.");
             if(!DoesFolderExist(connection, foldr))
                 throw new Exception("Folder wasn't found.");
@@ -148,7 +146,7 @@ namespace Decisions.GoogleDrive
             }, foldr.Id);
 
             var resp = request.Execute();
-            return new DrivePermission(resp.Id, resp.EmailAddress, permission.Type, permission.Role);
+            return new GoogleDrivePermission(resp.Id, resp.EmailAddress, permission.Type, permission.Role);
         }
     }
 }

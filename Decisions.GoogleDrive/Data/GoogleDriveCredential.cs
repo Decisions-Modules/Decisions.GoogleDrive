@@ -9,7 +9,7 @@ namespace Decisions.GoogleDrive
 {
 
     [DataContract]
-    public class DriveCredential
+    public class GoogleDriveCredential
     {
         [DataMember]
         public string ClientId = "";

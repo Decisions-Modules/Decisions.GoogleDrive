@@ -14,9 +14,9 @@ using File = Google.Apis.Drive.v3.Data.File;
 
 namespace Decisions.GoogleDrive
 {
-    public static partial class Drive
+    public static partial class GoogleDrive
     {
-        public static bool DoesFileExist(Connection connection, DriveFile file)
+        public static bool DoesFileExist(Connection connection, GoogleDriveFile file)
         {
             if (!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
@@ -33,7 +33,7 @@ namespace Decisions.GoogleDrive
             }
         }
 
-        public static DriveFile[] GetFiles(Connection connection, DriveFolder folder = null)
+        public static GoogleDriveFile[] GetFiles(Connection connection, GoogleDriveFolder folder = null)
         {
             string folderId = folder == null ? "root" : folder.Id;
 
@@ -51,11 +51,11 @@ namespace Decisions.GoogleDrive
                 fileList = listRequest.Execute();
                 files.AddRange(fileList.Files);
             }
-            DriveFile[] tmp = files.Select(t => new DriveFile(t.Id, t.Name, t.Description, t.WebViewLink)).ToArray();
+            GoogleDriveFile[] tmp = files.Select(t => new GoogleDriveFile(t.Id, t.Name, t.Description, t.WebViewLink)).ToArray();
             return tmp;
         }
 
-        public static void DeleteFile(Connection connection, DriveFile file)
+        public static void DeleteFile(Connection connection, GoogleDriveFile file)
         {
             if (!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
@@ -66,7 +66,7 @@ namespace Decisions.GoogleDrive
 
         }
 
-        public static DrivePermission[] GetFilePermissions(Connection connection, DriveFile file)
+        public static GoogleDrivePermission[] GetFilePermissions(Connection connection, GoogleDriveFile file)
         {
             if (!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
@@ -75,19 +75,19 @@ namespace Decisions.GoogleDrive
             var response = req.Execute();
 
             if(response.Permissions == null)
-                return new DrivePermission[] {};
+                return new GoogleDrivePermission[] {};
 
-            return response.Permissions.Select(x => new DrivePermission(x.Id, x.EmailAddress, TranslatePermType(x.Type), TranslateRole(x.Role))).ToArray();
+            return response.Permissions.Select(x => new GoogleDrivePermission(x.Id, x.EmailAddress, TranslatePermType(x.Type), TranslateRole(x.Role))).ToArray();
         }
 
-        public static DrivePermission SetFilePermissions(Connection connection, DriveFile file, DrivePermission permission /*, DrivePermType type,
+        public static GoogleDrivePermission SetFilePermissions(Connection connection, GoogleDriveFile file, GoogleDrivePermission permission /*, DrivePermType type,
             DriveRole role, string email = null*/)
         {
             if (!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
-            if (permission.Type != DrivePermType.anyone && permission.Email == null)
+            if (permission.Type != GoogleDrivePermType.anyone && permission.Email == null)
                 throw new Exception("This permission type requires an email.");
-            if (permission.Type == DrivePermType.unknown || permission.Role == DriveRole.unknown)
+            if (permission.Type == GoogleDrivePermType.unknown || permission.Role == GoogleDriveRole.unknown)
                 throw new Exception("Invalid arguments passed.");
             if (!DoesFileExist(connection, file))
                 throw new Exception("File wasn't found.");
@@ -100,10 +100,10 @@ namespace Decisions.GoogleDrive
             }, file.Id);
 
             var resp = request.Execute();
-            return new DrivePermission(resp.Id, resp.EmailAddress, permission.Type, permission.Role);
+            return new GoogleDrivePermission(resp.Id, resp.EmailAddress, permission.Type, permission.Role);
         }
 
-        public static bool DownloadFile(Connection connection, DriveFile file, Stream output, Action<IDownloadProgress> progressTracker = null)
+        public static bool DownloadFile(Connection connection, GoogleDriveFile file, Stream output, Action<IDownloadProgress> progressTracker = null)
         {
             if(!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
@@ -119,7 +119,7 @@ namespace Decisions.GoogleDrive
             return false;
         }
 
-        public static DriveFile UploadFile(Connection connection, Stream stream, string name, DriveFolder parent = null, Action<IUploadProgress> progessUpdate = null)
+        public static GoogleDriveFile UploadFile(Connection connection, Stream stream, string name, GoogleDriveFolder parent = null, Action<IUploadProgress> progessUpdate = null)
         {
             if (!connection.IsConnected() || connection.Service == null)
                 throw new Exception("Invalid connection object.");
@@ -142,7 +142,7 @@ namespace Decisions.GoogleDrive
                 var file = request.ResponseBody;
                 if (file != null)
                 {
-                    return new DriveFile(file.Id, file.Name, file.Description, file.WebViewLink);
+                    return new GoogleDriveFile(file.Id, file.Name, file.Description, file.WebViewLink);
                 }
             }
 

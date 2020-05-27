@@ -11,8 +11,6 @@ namespace DriveLibraryTests
     // [TestClass]
     public class ConnectionTests
     {
-
-
         [TestMethod]
         [ExpectedException(typeof(InvalidDataException))]
         public void NoClientSecretTest()

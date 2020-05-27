@@ -12,8 +12,8 @@ namespace Decisions.GoogleDriveTests
     [TestClass]
     public class FolderStepTests
     {
-        private readonly DriveCredential credentional = TestData.GetCredential();
-        private DriveFolder testFolder;
+        private readonly GoogleDriveCredential credentional = TestData.GetCredential();
+        private GoogleDriveFolder testFolder;
 
         [TestInitialize]
         public void InitTests()
@@ -39,7 +39,7 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void CreateFolderTest()
         {
-            DriveFolder createdFolder = null;
+            GoogleDriveFolder createdFolder = null;
             try
             {
                 createdFolder = FolderSteps.CreateFolder(credentional, testFolder, TestData.TestFolderName);
@@ -57,7 +57,7 @@ namespace Decisions.GoogleDriveTests
         public void DeleteFolderTest()
         {
 
-            DriveFolder createdFolder = null;
+            GoogleDriveFolder createdFolder = null;
             try
             {
                 createdFolder = FolderSteps.CreateFolder(credentional, testFolder, TestData.TestFolderName);
@@ -85,13 +85,13 @@ namespace Decisions.GoogleDriveTests
         public void GetPermsTest()
         {
             var perms = FolderSteps.GetFolderPermissions(credentional, testFolder);
-            Assert.IsTrue(perms.Any(x => x.Role == DriveRole.owner && x.Type == DrivePermType.user));
+            Assert.IsTrue(perms.Any(x => x.Role == GoogleDriveRole.owner && x.Type == GoogleDrivePermType.user));
         }
 
         [TestMethod]
         public void SetPermsTest()
         {
-            var perm = FolderSteps.SetFolderPermissions(credentional, testFolder, new DrivePermission(null, TestData.TestEmail, DrivePermType.user, DriveRole.writer));
+            var perm = FolderSteps.SetFolderPermissions(credentional, testFolder, new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer));
             Assert.IsTrue(perm.Id != "");
         }
 

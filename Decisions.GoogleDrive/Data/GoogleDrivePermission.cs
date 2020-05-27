@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Decisions.GoogleDrive
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum DriveRole
+    public enum GoogleDriveRole
     {
         owner,
         organizer,
@@ -22,7 +22,7 @@ namespace Decisions.GoogleDrive
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum DrivePermType
+    public enum GoogleDrivePermType
     {
         user,
         group,
@@ -32,9 +32,9 @@ namespace Decisions.GoogleDrive
     }
 
     [DataContract]
-    public class DrivePermission
+    public class GoogleDrivePermission
     {
-        public DrivePermission(string id, string email, DrivePermType type, DriveRole role)
+        public GoogleDrivePermission(string id, string email, GoogleDrivePermType type, GoogleDriveRole role)
         {
             Id = id;
             Email = email;
@@ -47,8 +47,8 @@ namespace Decisions.GoogleDrive
         [DataMember]
         public readonly string Email;
         [DataMember]
-        public readonly DrivePermType Type;
+        public readonly GoogleDrivePermType Type;
         [DataMember]
-        public readonly DriveRole Role;
+        public readonly GoogleDriveRole Role;
     }
 }
