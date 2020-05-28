@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DriveLibraryTests
 {
-   //[TestClass]
+  /*/[TestClass]
     public class FileTests
     {
         string TestFileFullName { get { return TestData.LocalTestDir + TestData.TestFileName; } }
@@ -56,9 +56,7 @@ namespace DriveLibraryTests
             Assert.IsTrue(folders.Length > 0);
 
             var files = GoogleDrive.GetFiles(connection, folders[0].Id);
-
-            Assert.IsInstanceOfType(files, typeof(GoogleDriveFile[]));
-            Assert.IsTrue(files.Length > 0);
+            Assert.AreEqual(GoogleDriveResultStatus.Success, files.Status);
         }
 
         [TestMethod]
@@ -176,5 +174,5 @@ namespace DriveLibraryTests
                 Debug.WriteLine("File link: " + file.SharingLink);
             }
         }
-    }
+    }*/
 }

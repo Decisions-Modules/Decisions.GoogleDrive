@@ -10,10 +10,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DriveLibraryTests
 {
-    //[TestClass]
+   /*  //[TestClass]
     public class FolderTests
     {
-        [TestMethod]
+     [TestMethod]
         public void ListFoldersTest()
         {
             Connection connection = Connection.Create(TestData.GetCredential());
@@ -105,5 +105,5 @@ namespace DriveLibraryTests
             Assert.IsTrue(perm.Id != "");
             Debug.WriteLine("Set perm to folder " + files[0].Name);
         }
-    }
+    }*/
 }

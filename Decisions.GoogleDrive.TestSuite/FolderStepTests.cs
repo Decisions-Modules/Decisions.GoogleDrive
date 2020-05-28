@@ -18,7 +18,7 @@ namespace Decisions.GoogleDriveTests
         [TestInitialize]
         public void InitTests()
         {
-            testFolder = FolderSteps.CreateFolder(credentional, null, TestData.TestFolderName);
+            testFolder = FolderSteps.CreateFolder(credentional, null, TestData.TestFolderName).Data;
         }
 
         [TestCleanupAttribute]
@@ -28,27 +28,42 @@ namespace Decisions.GoogleDriveTests
         }
 
         [TestMethod]
+        public void DoesFolderExistTest()
+        {
+            var shouldBeFalse = FolderSteps.DoesFolderExist(credentional, "incorrect Id");
+            Assert.IsTrue(shouldBeFalse.IsSucceed);
+            Assert.IsFalse(shouldBeFalse.Data);
+
+            var shouldBeTrue = FolderSteps.DoesFolderExist(credentional, testFolder.Id);
+            Assert.IsTrue(shouldBeTrue.IsSucceed);
+            Assert.IsTrue(shouldBeTrue.Data);
+        }
+
+        [TestMethod]
         public void ListFoldersTest()
         {
             var rootFileList = FolderSteps.GetFolderList(credentional, null);
-            var testFolderFileList = FolderSteps.GetFolderList(credentional, testFolder.Id);
+            Assert.IsTrue(rootFileList.IsSucceed);
 
-            Assert.IsTrue(rootFileList.Length > 0 || testFolderFileList.Length > 0);
+            var testFolderFileList = FolderSteps.GetFolderList(credentional, testFolder.Id);
+            Assert.IsTrue(rootFileList.IsSucceed);
+
         }
 
         [TestMethod]
         public void CreateFolderTest()
         {
-            GoogleDriveFolder createdFolder = null;
+            GoogleDriveResultWithData<GoogleDriveFolder> createdFolder = null;
             try
             {
                 createdFolder = FolderSteps.CreateFolder(credentional, testFolder.Id, TestData.TestFolderName);
-                Assert.IsNotNull(createdFolder);
+                Assert.IsTrue(createdFolder.IsSucceed);
+                Assert.IsNotNull(createdFolder.Data);
             }
             finally
             {
                 if (createdFolder != null)
-                    FolderSteps.DeleteFolder(credentional, createdFolder.Id);
+                    FolderSteps.DeleteFolder(credentional, createdFolder.Data.Id);
             }
 
         }
@@ -57,24 +72,28 @@ namespace Decisions.GoogleDriveTests
         public void DeleteFolderTest()
         {
 
-            GoogleDriveFolder createdFolder = null;
+            GoogleDriveResultWithData<GoogleDriveFolder> createdFolder = null;
             try
             {
                 createdFolder = FolderSteps.CreateFolder(credentional, testFolder.Id, TestData.TestFolderName);
-                Assert.IsNotNull(createdFolder);
+                Assert.IsTrue(createdFolder.IsSucceed);
 
                 var folderListBefore = FolderSteps.GetFolderList(credentional, testFolder.Id);
-                FolderSteps.DeleteFolder(credentional, createdFolder.Id);
-                var folderListAfter = FolderSteps.GetFolderList(credentional, testFolder.Id);
+                Assert.IsTrue(folderListBefore.IsSucceed);
 
-                Assert.AreEqual(1, folderListBefore.Length - folderListAfter.Length);
+                FolderSteps.DeleteFolder(credentional, createdFolder.Data.Id);
+
+                var folderListAfter = FolderSteps.GetFolderList(credentional, testFolder.Id);
+                Assert.IsTrue(folderListAfter.IsSucceed);
+
+                Assert.AreEqual(1, folderListBefore.Data.Length - folderListAfter.Data.Length);
             }
             finally
             {
                 try
                 {
                     if (createdFolder != null)
-                        FolderSteps.DeleteFolder(credentional, createdFolder.Id);
+                        FolderSteps.DeleteFolder(credentional, createdFolder.Data.Id);
                 }
                 catch { }
             }
@@ -85,14 +104,16 @@ namespace Decisions.GoogleDriveTests
         public void GetPermsTest()
         {
             var perms = FolderSteps.GetFolderPermissions(credentional, testFolder.Id);
-            Assert.IsTrue(perms.Any(x => x.Role == GoogleDriveRole.owner && x.Type == GoogleDrivePermType.user));
+            Assert.IsTrue(perms.IsSucceed);
+            Assert.IsTrue(perms.Data.Any(x => x.Role == GoogleDriveRole.owner && x.Type == GoogleDrivePermType.user));
         }
 
         [TestMethod]
         public void SetPermsTest()
         {
             var perm = FolderSteps.SetFolderPermissions(credentional, testFolder.Id, new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer));
-            Assert.IsTrue(perm.Id != "");
+            Assert.IsTrue(perm.IsSucceed);
+            Assert.IsTrue(perm.Data.Id != "");
         }
 
 
