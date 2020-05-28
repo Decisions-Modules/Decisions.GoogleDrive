@@ -15,6 +15,7 @@ namespace Decisions.GoogleDriveTests
             {
                 ClientId = "your client id",
                 ClientSecret = "your client secret",
+
                 DataStore = @"C:\data\tmp"
             };
         }
@@ -23,8 +24,7 @@ namespace Decisions.GoogleDriveTests
         public static string TestFileName = "test.txt";
         public static string TestFolderName = "_TestFolder_";
 
-        public static string TestEmail= "gasser45123@gmail.com";
-
+        public static string TestEmail= "kovalchuk.i.v.1976@gmail.com";
 
     }
 }
