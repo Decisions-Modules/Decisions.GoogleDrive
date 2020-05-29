@@ -12,26 +12,6 @@ namespace Decisions.GoogleDrive
 {
     public static partial class GoogleDrive
     {
-        public static GoogleDriveResultWithData<bool> DoesFolderExist(Connection connection, string folderId)
-        {
-            CheckConnectionOrException(connection);
-
-            var request = connection.Service.Files.Get(folderId);
-
-            GoogleDriveResultWithData<bool> result = ExecuteRequest<FilesResource.GetRequest, Google.Apis.Drive.v3.Data.File, GoogleDriveResultWithData<bool>>(request, (resp, res) =>
-            {
-                res.Data = true;
-            });
-
-            if (result.HttpErrorCode == HttpStatusCode.NotFound)
-            {
-                result.IsSucceed = true;
-                result.Data = false;
-            }
-
-            return result;
-        }
-
         public static GoogleDriveResultWithData<GoogleDriveFolder[]> GetFolders(Connection connection, string folderId=null)
         {
             var rawResult = GetResources(connection, false, folderId);
@@ -58,48 +38,5 @@ namespace Decisions.GoogleDrive
             return result;
         }
 
-        public static GoogleDriveBaseResult DeleteFolder(Connection connection, string folderId)
-        {
-            CheckConnectionOrException(connection);
-
-            FilesResource.DeleteRequest request = connection.Service.Files.Delete(folderId);
-            GoogleDriveBaseResult result = ExecuteRequest<FilesResource.DeleteRequest, string, GoogleDriveBaseResult>(request, null);
-            return result;
-        }
-
-
-        public static GoogleDriveResultWithData<GoogleDrivePermission[]> GetFolderPermissions(Connection connection, string folderId)
-        {
-            return GetFilePermissions(connection, folderId);
-            /*CheckConnectionOrException(connection);
-            var req = connection.Service.Files.Get(folderId);
-            req.Fields = "permissions";
-            var response = req.Execute();
-
-            if (response.Permissions == null)
-                return new GoogleDrivePermission[] { };
-
-            return response.Permissions.Select(x => new GoogleDrivePermission(x.Id, x.EmailAddress, TranslatePermType(x.Type), TranslateRole(x.Role))).ToArray();*/
-        }
-
-        public static GoogleDriveResultWithData<GoogleDrivePermission> SetFolderPermissions(Connection connection, string folderId, GoogleDrivePermission permission)
-        {
-            return SetFilePermissions(connection, folderId, permission);
-           /* CheckConnectionOrException(connection);
-            CheckPermissionOrException(permission);
-
-            //if (!DoesFolderExist(connection, folderId))
-            //    throw new Exception("Folder wasn't found.");
-
-            var request = connection.Service.Permissions.Create(new Permission()
-            {
-                EmailAddress = permission.Email,
-                Type = permission.Type.ToString(),
-                Role = permission.Role.ToString()
-            }, folderId);
-
-            var resp = request.Execute();
-            return new GoogleDrivePermission(resp.Id, resp.EmailAddress, permission.Type, permission.Role);*/
-        }
     }
 }

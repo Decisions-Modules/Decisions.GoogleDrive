@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 namespace Decisions.GoogleDrive
 {
     [AutoRegisterMethodsOnClass(true, "Integration/Google Drive/Files")]
-    public static class FileSteps
+    public static class StepsCore
     {
-        public static GoogleDriveResultWithData<bool> DoesFileExist(GoogleDriveCredential credential, string googleDriveFileId)
+        public static GoogleDriveResultWithData<GoogleDriveResourceType> DoesResourceExist(GoogleDriveCredential credential, string googleDriveFileOrFolderId)
         {
             var connection = Connection.Create(credential);
-            return GoogleDrive.DoesFileExist(connection, googleDriveFileId);
+            return GoogleDrive.DoesResourceExist(connection, googleDriveFileOrFolderId);
         }
 
         public static GoogleDriveResultWithData<GoogleDriveFile[]> GetFileList(GoogleDriveCredential credential, string googleDriveFolderId)
@@ -23,22 +23,22 @@ namespace Decisions.GoogleDrive
             return files;
         }
 
-        public static GoogleDriveBaseResult DeleteFile(GoogleDriveCredential credential, string googleDriveFileId)
+        public static GoogleDriveBaseResult DeleteResource(GoogleDriveCredential credential, string googleDriveFileOrFolderId)
         {
             var connection = Connection.Create(credential);
-            return GoogleDrive.DeleteFile(connection, googleDriveFileId);
+            return GoogleDrive.DeleteResource(connection, googleDriveFileOrFolderId);
         }
 
-        public static GoogleDriveResultWithData<GoogleDrivePermission[]> GetFilePermissions(GoogleDriveCredential credential, string googleDriveFileId)
+        public static GoogleDriveResultWithData<GoogleDrivePermission[]> GetResourcePermissions(GoogleDriveCredential credential, string googleDriveFileOrFolderId)
         {
             var connection = Connection.Create(credential);
-            return GoogleDrive.GetFilePermissions(connection, googleDriveFileId);
+            return GoogleDrive.GetResourcePermissions(connection, googleDriveFileOrFolderId);
         }
 
-        public static GoogleDriveResultWithData<GoogleDrivePermission> SetFilePermissions(GoogleDriveCredential credential, string googleDriveFileId, GoogleDrivePermission permission)
+        public static GoogleDriveResultWithData<GoogleDrivePermission> SetResourcePermissions(GoogleDriveCredential credential, string googleDriveFileOrFolderId, GoogleDrivePermission permission)
         {
             var connection = Connection.Create(credential);
-            var res = GoogleDrive.SetFilePermissions(connection, googleDriveFileId, permission);
+            var res = GoogleDrive.SetResourcePermissions(connection, googleDriveFileOrFolderId, permission);
             return res;
         }
 
@@ -66,6 +66,20 @@ namespace Decisions.GoogleDrive
                 fs.Close();
                 return file;
             }
+        }
+
+        public static GoogleDriveResultWithData<GoogleDriveFolder[]> GetFolderList(GoogleDriveCredential credential, string googleDriveFolderId)
+        {
+            var connection = Connection.Create(credential);
+            var folders = GoogleDrive.GetFolders(connection, googleDriveFolderId);
+            return folders;
+        }
+
+        public static GoogleDriveResultWithData<GoogleDriveFolder> CreateFolder(GoogleDriveCredential credential, string parentGoogleDriveFolderId, string newFolderName)
+        {
+            var connection = Connection.Create(credential);
+            var folderResult = GoogleDrive.CreateFolder(connection, newFolderName, parentGoogleDriveFolderId);
+            return folderResult;
         }
 
 

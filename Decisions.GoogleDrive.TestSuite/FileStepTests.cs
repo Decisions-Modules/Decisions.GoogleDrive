@@ -1,6 +1,5 @@
 ﻿using Decisions.GoogleDrive;
 using Decisions.GoogleDriveTests;
-using DriveLibrary.Steps;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -29,7 +28,7 @@ namespace Decisions.GoogleDriveTests
                 stream.Write($"{i}qwertyuiop\n");
             stream.Close();
 
-            testFolder = FolderSteps.CreateFolder(credentional, null, TestData.TestFolderName).Data;
+            testFolder = StepsCore.CreateFolder(credentional, null, TestData.TestFolderName).Data;
 
         }
 
@@ -37,33 +36,34 @@ namespace Decisions.GoogleDriveTests
         public void CleanupTests()
         {
             File.Delete(TestFileFullName);
-            FolderSteps.DeleteFolder(credentional, testFolder.Id);
+            StepsCore.DeleteResource(credentional, testFolder.Id);
         }
 
         [TestMethod]
-        public void DoesFileExistTest()
+        public void DoesResourceExistTest()
         {
-
-            var shouldBeFalse = FileSteps.DoesFileExist(credentional, "incorrect Id");
-            Assert.IsFalse(shouldBeFalse.Data);
+            var ShoulBeUnavailable = StepsCore.DoesResourceExist(credentional, "incorrect Id");
+            Assert.AreEqual(GoogleDriveResourceType.Unavailable, ShoulBeUnavailable.Data);
             
-            var uploadResult = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
+            var ShoulBeFolder = StepsCore.DoesResourceExist(credentional, testFolder.Id);
+            Assert.AreEqual(GoogleDriveResourceType.Folder, ShoulBeFolder.Data);
 
+            var uploadResult = StepsCore.UploadFile(credentional, testFolder.Id, TestFileFullName);
             try
             {
-                var shouldBeTrue = FileSteps.DoesFileExist(credentional, uploadResult.Data.Id);
-                Assert.IsTrue(shouldBeTrue.Data);
+                var ShoulBeFile = StepsCore.DoesResourceExist(credentional, uploadResult.Data.Id);
+                Assert.AreEqual(GoogleDriveResourceType.File, ShoulBeFile.Data);
             }
             finally
             {
-                FileSteps.DeleteFile(credentional, uploadResult.Data.Id);
+                StepsCore.DeleteResource(credentional, uploadResult.Data.Id);
             }
         }
 
         [TestMethod]
         public void ListFilesTest()
         {
-                var rootFileList = FileSteps.GetFileList(credentional, null);
+                var rootFileList = StepsCore.GetFileList(credentional, null);
                 Assert.IsTrue(rootFileList.IsSucceed);
         }
         
@@ -75,35 +75,35 @@ namespace Decisions.GoogleDriveTests
 
             try
             {
-                var rootFileList = FileSteps.GetFileList(credentional, null);
+                var rootFileList = StepsCore.GetFileList(credentional, null);
                 Assert.IsTrue(rootFileList.IsSucceed);
 
                 for (int i = 0; i < FILE_COUNT; i++)
-                    uploadedFiles.Add(FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName).Data);
+                    uploadedFiles.Add(StepsCore.UploadFile(credentional, testFolder.Id, TestFileFullName).Data);
 
-                var testFolderFileList = FileSteps.GetFileList(credentional, testFolder.Id);
+                var testFolderFileList = StepsCore.GetFileList(credentional, testFolder.Id);
                 Assert.IsTrue(testFolderFileList.IsSucceed);
                 Assert.AreEqual(FILE_COUNT, testFolderFileList.Data.Length);
             }
             finally
             {
-                uploadedFiles.ForEach(file => FileSteps.DeleteFile(credentional, file.Id));
+                uploadedFiles.ForEach(file => StepsCore.DeleteResource(credentional, file.Id));
             }
         }
 
         [TestMethod]
         public void DeleteFileTest()
         {
-            var uploadResult = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
+            var uploadResult = StepsCore.UploadFile(credentional, testFolder.Id, TestFileFullName);
             try
             {
-                var fileListBefore = FileSteps.GetFileList(credentional, testFolder.Id);
+                var fileListBefore = StepsCore.GetFileList(credentional, testFolder.Id);
                 Assert.IsTrue(fileListBefore.IsSucceed);
 
-                var delResult=FileSteps.DeleteFile(credentional, uploadResult.Data.Id);
+                var delResult=StepsCore.DeleteResource(credentional, uploadResult.Data.Id);
                 Assert.IsTrue(delResult.IsSucceed);
 
-                var fileListAfter = FileSteps.GetFileList(credentional, testFolder.Id);
+                var fileListAfter = StepsCore.GetFileList(credentional, testFolder.Id);
                 Assert.IsTrue(fileListAfter.IsSucceed);
 
                 Assert.AreEqual(1, fileListBefore.Data.Length - fileListAfter.Data.Length);
@@ -112,7 +112,7 @@ namespace Decisions.GoogleDriveTests
             {
                 try
                 {
-                    FileSteps.DeleteFile(credentional, uploadResult.Data.Id);
+                    StepsCore.DeleteResource(credentional, uploadResult.Data.Id);
                 }
                 catch { }
             }
@@ -121,32 +121,37 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void GetPermsTest()
         {
-            var uploadResult = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
+            var uploadResult = StepsCore.UploadFile(credentional, testFolder.Id, TestFileFullName);
             try
             {
-                var permissionResult = FileSteps.GetFilePermissions(credentional, uploadResult.Data.Id);
+                var permissionResult = StepsCore.GetResourcePermissions(credentional, uploadResult.Data.Id);
                 Assert.IsTrue(permissionResult.IsSucceed);
                 Assert.IsTrue(permissionResult.Data.Length > 0);
             }
             finally
             {
-                FileSteps.DeleteFile(credentional, uploadResult.Data.Id);
+                StepsCore.DeleteResource(credentional, uploadResult.Data.Id);
             }
         }
 
         [TestMethod]
         public void SetPermsTest()
         {
-            var uploadResult = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
+            var uploadResult = StepsCore.UploadFile(credentional, testFolder.Id, TestFileFullName);
             try
             {
                 var newPermission = new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer);
-                var permission = FileSteps.SetFilePermissions(credentional, uploadResult.Data.Id, newPermission);
+                var permission = StepsCore.SetResourcePermissions(credentional, uploadResult.Data.Id, newPermission);
                 Assert.IsTrue(permission.IsSucceed);
+
+                var perms = StepsCore.GetResourcePermissions(credentional, uploadResult.Data.Id);
+                var res = Enumerable.Any(perms.Data, (it) => { return it.Id == permission.Data.Id; });
+                Assert.IsTrue(res);
+
             }
             finally
             {
-                FileSteps.DeleteFile(credentional, uploadResult.Data.Id);
+                StepsCore.DeleteResource(credentional, uploadResult.Data.Id);
             }
         }
 
@@ -154,7 +159,7 @@ namespace Decisions.GoogleDriveTests
         public void SetIncorrectPermsTest()
         {
             var newPermission = new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer);
-            var permissionResult = FileSteps.SetFilePermissions(credentional, "incorrect Id", newPermission);
+            var permissionResult = StepsCore.SetResourcePermissions(credentional, "incorrect Id", newPermission);
             Assert.IsFalse( permissionResult.IsSucceed);
 
         }
@@ -162,11 +167,11 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void DownloadFileTest()
         {
-            var uploadResult = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
+            var uploadResult = StepsCore.UploadFile(credentional, testFolder.Id, TestFileFullName);
             string localFileName = TestFileFullName + "_";
             try
             {
-                var downloadResult = FileSteps.DownloadFile(credentional, uploadResult.Data.Id, localFileName);
+                var downloadResult = StepsCore.DownloadFile(credentional, uploadResult.Data.Id, localFileName);
                 Assert.IsTrue(downloadResult.IsSucceed);
                 Assert.IsTrue(File.Exists(localFileName));
 
@@ -178,7 +183,7 @@ namespace Decisions.GoogleDriveTests
             }
             finally
             {
-                FileSteps.DeleteFile(credentional, uploadResult.Data.Id);
+                StepsCore.DeleteResource(credentional, uploadResult.Data.Id);
                 System.IO.File.Delete(localFileName);
             }
         }
@@ -189,7 +194,7 @@ namespace Decisions.GoogleDriveTests
             string localFileName = TestFileFullName + "_";
             try
             {
-                var downloadResult = FileSteps.DownloadFile(credentional, "incorrect id", localFileName);
+                var downloadResult = StepsCore.DownloadFile(credentional, "incorrect id", localFileName);
                 Assert.IsFalse( downloadResult.IsSucceed);
 
             }
@@ -205,14 +210,14 @@ namespace Decisions.GoogleDriveTests
             GoogleDriveResultWithData<GoogleDriveFile> uploadResult = null;
             try
             {
-                uploadResult = FileSteps.UploadFile(credentional, testFolder.Id, TestFileFullName);
+                uploadResult = StepsCore.UploadFile(credentional, testFolder.Id, TestFileFullName);
                 Assert.IsTrue(uploadResult.IsSucceed);
                 Assert.IsNotNull(uploadResult.Data);
             }
             finally
             {
                 if(uploadResult != null && uploadResult.Data!=null)
-                  FileSteps.DeleteFile(credentional, uploadResult.Data.Id);
+                  StepsCore.DeleteResource(credentional, uploadResult.Data.Id);
             }
         }
 
@@ -220,7 +225,7 @@ namespace Decisions.GoogleDriveTests
         public void ListFilesInIncorrectFolderTest()
         {
 
-            var testFolderFileList = FileSteps.GetFileList(credentional, "incorrect Id");
+            var testFolderFileList = StepsCore.GetFileList(credentional, "incorrect Id");
             Assert.IsFalse(testFolderFileList.IsSucceed);
         }
 

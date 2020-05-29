@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Decisions.GoogleDrive
 {
-
     [DataContract]
     public class GoogleDriveCredential
     {

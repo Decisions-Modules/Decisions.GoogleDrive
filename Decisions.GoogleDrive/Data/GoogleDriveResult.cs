@@ -11,16 +11,11 @@ using System.Threading.Tasks;
 
 namespace Decisions.GoogleDrive
 {
-    [DataContract]
+
     public class GoogleDriveBaseResult
     {
-        [DataMember]
         public string ErrorMessage { get; set; }
-
-        [DataMember]
         public HttpStatusCode HttpErrorCode { get; set; }
-
-        [DataMember]
         public bool IsSucceed { get; set; }
     }
 
@@ -38,48 +33,5 @@ namespace Decisions.GoogleDrive
         }
         
     }
-
-    /*[DataContract]
-    public class GoogleDriveBoolResult : GoogleDriveBaseResult
-    {
-        [DataMember]
-        public bool Data { get; set; }
-    }
-
-    [DataContract]
-    public class GoogleDriveFileListResult : GoogleDriveBaseResult
-    {
-        [DataMember]
-        public GoogleDriveFile[] Data { get; set; }
-
-        public GoogleDriveFileListResult() { }
-        internal GoogleDriveFileListResult(GoogleDriveBaseResult baseResult)
-        {
-            ErrorMessage = baseResult.ErrorMessage;
-            HttpErrorCode = baseResult.HttpErrorCode;
-            IsSucceed = baseResult.IsSucceed;
-        }
-    }
-
-    [DataContract]
-    public class GoogleDriveGetPermissionResult : GoogleDriveBaseResult
-    {
-        [DataMember]
-        public GoogleDrivePermission[] Data { get; set; }
-    }
-
-    [DataContract]
-    public class GoogleDriveSetPermissionResult : GoogleDriveBaseResult
-    {
-        [DataMember]
-        public GoogleDrivePermission Data { get; set; }
-    }
-
-    [DataContract]
-    public class GoogleDriveUploadResult : GoogleDriveBaseResult
-    {
-        [DataMember]
-        public GoogleDriveFile Data { get; set; }
-    }*/
 
 }

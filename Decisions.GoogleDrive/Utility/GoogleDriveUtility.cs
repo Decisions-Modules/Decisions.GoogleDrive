@@ -7,6 +7,7 @@ using Google.Apis.Upload;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -149,6 +150,8 @@ namespace Decisions.GoogleDrive
             throw result.Exception;
         }
 
+        const string FolderMimeType = "application/vnd.google-apps.folder";
+
         private static GoogleDriveResultWithData<List<Google.Apis.Drive.v3.Data.File>> GetResources(Connection connection, bool wantsFiles, string folderId = null)
         {
             CorrectFolderId(ref folderId);
@@ -158,9 +161,9 @@ namespace Decisions.GoogleDrive
 
             FilesResource.ListRequest listRequest = connection.Service.Files.List();
             if(wantsFiles)
-                listRequest.Q = $"mimeType != 'application/vnd.google-apps.folder' and '{folderId}' in parents and trashed = false";
+                listRequest.Q = $"mimeType != '{FolderMimeType}' and '{folderId}' in parents and trashed = false";
             else
-                listRequest.Q = $"mimeType = 'application/vnd.google-apps.folder' and '{folderId}' in parents and trashed = false";
+                listRequest.Q = $"mimeType = '{FolderMimeType}' and '{folderId}' in parents and trashed = false";
 
             listRequest.Fields = "nextPageToken, files(id, name, mimeType, description, webViewLink)";
 
@@ -181,7 +184,77 @@ namespace Decisions.GoogleDrive
             } while (googleDriveFileList != null && googleDriveFileList.NextPageToken != null);
 
             var result = new GoogleDriveResultWithData<List<Google.Apis.Drive.v3.Data.File>> (partialResult) { Data = files };
-            //result.Data = files.Select(t => new GoogleDriveFile(t.Id, t.Name, t.Description, t.WebViewLink)).ToArray();
+
+            return result;
+        }
+
+        public static GoogleDriveResultWithData<GoogleDriveResourceType> DoesResourceExist(Connection connection, string fileOrFolderId)
+        {
+            CheckConnectionOrException(connection);
+
+            var request = connection.Service.Files.Get(fileOrFolderId);
+
+            GoogleDriveResultWithData<GoogleDriveResourceType> result = ExecuteRequest<FilesResource.GetRequest, Google.Apis.Drive.v3.Data.File, GoogleDriveResultWithData<GoogleDriveResourceType>>(request, (resp, res) =>
+            {
+                if(resp.MimeType == FolderMimeType)
+                    res.Data = GoogleDriveResourceType.Folder;
+                else
+                    res.Data = GoogleDriveResourceType.File;
+            });
+
+            if (result.HttpErrorCode == HttpStatusCode.NotFound)
+            {
+                result.IsSucceed = true;
+                result.Data = GoogleDriveResourceType.Unavailable;
+            }
+
+            return result;
+        }
+
+        public static GoogleDriveBaseResult DeleteResource(Connection connection, string fileOrFolderId)
+        {
+            CheckConnectionOrException(connection);
+
+            FilesResource.DeleteRequest request = connection.Service.Files.Delete(fileOrFolderId);
+            GoogleDriveBaseResult result = ExecuteRequest<FilesResource.DeleteRequest, string, GoogleDriveBaseResult>(request, null);
+            return result;
+        }
+
+        public static GoogleDriveResultWithData<GoogleDrivePermission[]> GetResourcePermissions(Connection connection, string fileOrFolderId)
+        {
+            CheckConnectionOrException(connection);
+
+            FilesResource.GetRequest request = connection.Service.Files.Get(fileOrFolderId);
+            request.Fields = "permissions";
+
+            GoogleDriveResultWithData<GoogleDrivePermission[]> result = ExecuteRequest<FilesResource.GetRequest, File, GoogleDriveResultWithData<GoogleDrivePermission[]>>(request, (resp, res) =>
+            {
+                if (resp.Permissions == null)
+                    res.Data = new GoogleDrivePermission[] { };
+                else
+                    res.Data = resp.Permissions.Select(x => new GoogleDrivePermission(x.Id, x.EmailAddress, TranslatePermType(x.Type), TranslateRole(x.Role))).ToArray();
+            });
+
+            return result;
+        }
+
+        public static GoogleDriveResultWithData<GoogleDrivePermission> SetResourcePermissions(Connection connection, string fileOrFolderId, GoogleDrivePermission permission)
+        {
+            CheckConnectionOrException(connection);
+            CheckPermissionOrException(permission);
+
+            PermissionsResource.CreateRequest request = connection.Service.Permissions.Create(new Permission()
+            {
+                EmailAddress = permission.Email,
+                Type = permission.Type.ToString(),
+                Role = permission.Role.ToString()
+            }, fileOrFolderId);
+
+            GoogleDriveResultWithData<GoogleDrivePermission> result = ExecuteRequest<PermissionsResource.CreateRequest, Permission, GoogleDriveResultWithData<GoogleDrivePermission>>(request, (resp, res) =>
+            {
+                res.Data = new GoogleDrivePermission(resp.Id, resp.EmailAddress, permission.Type, permission.Role);
+            });
+
             return result;
         }
     };

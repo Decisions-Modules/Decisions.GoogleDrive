@@ -6,40 +6,21 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Download;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Decisions.GoogleDrive
 {
     [DataContract]
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum GoogleDriveResourceType { Unavailable = 0, File = 1, Folder=2 }
+
+    [DataContract]
     public class GoogleDriveFile
     {
-       /* [IgnoreDataMember]
-        private readonly Connection _connection;
 
-        public bool Exists()
-        {
-            return Drive.DoesFileExist(_connection, this);
-        }
-        public void Delete()
-        {
-            Drive.DeleteFile(_connection, this);
-        }
-        public DrivePermission[] GetPermissions()
-        {
-            return Drive.GetFilePermissions(_connection, this);
-        }
-        public DrivePermission SetPermissions(DrivePermType type, DriveRole role, string email = null)
-        {
-            return Drive.SetFilePermissions(_connection, this, type, role, email);
-        }
-        public bool Download(Stream output, Action<IDownloadProgress> progressTracker = null)
-        {
-            return Drive.DownloadFile(_connection, this, output, progressTracker);
-        }*/
-        
-        
         internal GoogleDriveFile(string id, string name, string desc, string link)
         {
-            //_connection = cnct;
             Id = id;
             Name = name;
             Description = desc;
