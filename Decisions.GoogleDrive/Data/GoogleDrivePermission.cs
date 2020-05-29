@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DecisionsFramework.Design.Properties;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
@@ -41,14 +42,22 @@ namespace Decisions.GoogleDrive
             Type = type;
             Role = role;
         }
+        public GoogleDrivePermission()
+        { }
 
         [DataMember]
-        public readonly string Id;
+        public string Id { get; }
+
         [DataMember]
-        public readonly string Email;
+        [PropertyClassificationAttribute("User's Email", 1)]
+        public string Email { get; set; }
+
         [DataMember]
-        public readonly GoogleDrivePermType Type;
+        [PropertyClassificationAttribute("Permission Type", 2)]
+        public GoogleDrivePermType Type { get; set; }
+
         [DataMember]
-        public readonly GoogleDriveRole Role;
+        [PropertyClassificationAttribute("Role", 3)]
+        public GoogleDriveRole Role { get; set; }
     }
 }

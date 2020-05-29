@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Decisions.GoogleDrive
 {
-    [AutoRegisterMethodsOnClass(true, "Integration/Google Drive/Files")]
     public static class StepsCore
     {
         public static GoogleDriveResultWithData<GoogleDriveResourceType> DoesResourceExist(GoogleDriveCredential credential, string googleDriveFileOrFolderId)

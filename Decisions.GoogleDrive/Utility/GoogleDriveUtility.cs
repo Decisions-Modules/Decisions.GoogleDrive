@@ -87,7 +87,7 @@ namespace Decisions.GoogleDrive
             }
             catch (Google.GoogleApiException ex)
             {
-                result.ErrorMessage = ex.Error.Message;
+                result.ErrorMessage = (ex.Message??"") + (ex.Error?.Message??"");
                 result.HttpErrorCode = ex.HttpStatusCode;
                 result.IsSucceed = false;
             }

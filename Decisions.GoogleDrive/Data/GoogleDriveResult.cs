@@ -12,16 +12,23 @@ using System.Threading.Tasks;
 namespace Decisions.GoogleDrive
 {
 
-    public class GoogleDriveBaseResult
+    [DataContract]
+    public class GoogleDriveErrorInfo
     {
-        public string ErrorMessage { get; set; }
-        public HttpStatusCode HttpErrorCode { get; set; }
+        [DataMember] public string ErrorMessage { get; set; }
+        [DataMember] public HttpStatusCode HttpErrorCode { get; set; }
+    }
+
+    public class GoogleDriveBaseResult: GoogleDriveErrorInfo
+    {
         public bool IsSucceed { get; set; }
+        public virtual object DataObj { get { return null; } }
     }
 
     public class GoogleDriveResultWithData<T> : GoogleDriveBaseResult
     {
         public T Data { get; set; }
+        public override object DataObj { get { return Data; } }
 
         public GoogleDriveResultWithData() { }
 
