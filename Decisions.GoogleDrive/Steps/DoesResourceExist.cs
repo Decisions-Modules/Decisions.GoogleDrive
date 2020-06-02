@@ -1,6 +1,7 @@
 ﻿using DecisionsFramework.Design.ConfigurationStorage.Attributes;
 using DecisionsFramework.Design.Flow;
 using DecisionsFramework.Design.Flow.Mapping;
+using DecisionsFramework.Design.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,26 +14,31 @@ namespace Decisions.GoogleDrive
     [Writable]
     public class DoesResourceExist:AbstractStep
     {
-
-        protected override OutcomeScenarioData CorrectOutcomeScenario 
+        [PropertyHidden]
+        public override DataDescription[] InputData
         {
             get
             {
-                return new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveResourceType), RESULT) );
+                var res = new List<DataDescription>(base.InputData);
+                res.Add(new DataDescription(typeof(string), FILE_OR_FOLDER_ID));
+                return res.ToArray();
+            }
+        }
+        public override OutcomeScenarioData[] OutcomeScenarios
+        {
+            get
+            {
+                var res = base.OutcomeScenarios;
+                res[RESULT_OUTCOME_INDEX] = new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveResourceType), RESULT));
+                return res;
             }
         }
 
-        public DoesResourceExist() 
+        protected override GoogleDriveBaseResult ExecuteStep(Connection connection, StepStartData data)
         {
-            InputDataList.Add(new DataDescription(typeof(string), FILE_OR_FOLDER_ID));
-        }
-
-        protected override GoogleDriveBaseResult ExecuteStep(StepStartData data)
-        {
-            var credentinal = (GoogleDriveCredential) data.Data[CREDENTINAL_DATA];
             var fileOrFolderId = (string) data.Data[FILE_OR_FOLDER_ID];
 
-            return StepsCore.DoesResourceExist(credentinal, fileOrFolderId);
+            return GoogleDriveUtility.DoesResourceExist(connection, fileOrFolderId);
         }
     }
 }

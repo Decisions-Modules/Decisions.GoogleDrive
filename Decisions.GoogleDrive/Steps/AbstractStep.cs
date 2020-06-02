@@ -1,9 +1,12 @@
-﻿using DecisionsFramework.Design.ConfigurationStorage.Attributes;
+﻿using Decisions.OAuth;
+using DecisionsFramework;
+using DecisionsFramework.Design.ConfigurationStorage.Attributes;
 using DecisionsFramework.Design.Flow;
 using DecisionsFramework.Design.Flow.Mapping;
 using DecisionsFramework.Design.Flow.Mapping.InputImpl;
 using DecisionsFramework.Design.Properties;
 using DecisionsFramework.ServiceLayer.Services.ContextData;
+using DecisionsFramework.ServiceLayer.Services.OAuth2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +16,9 @@ using System.Threading.Tasks;
 namespace Decisions.GoogleDrive
 {
 
-    //[AutoRegisterStep("Step Name", "Step Category")]
+
     [Writable]
-    public abstract class AbstractStep : ISyncStep, IDataConsumer, IDataProducer//, IDefaultInputMappingStep
+    public abstract class AbstractStep : ISyncStep, IDataConsumer, IDataProducer
     {
         public const string GoogleDriveCategory = "Integration/Google Drive";
         
@@ -27,60 +30,83 @@ namespace Decisions.GoogleDrive
         
 
         protected const string CREDENTINAL_DATA = "Credentinal";
+        protected const string SERVICE_ACCOUNT_CREDENTINAL_DATA = "Service Account Credentinal";
         protected const string FILE_OR_FOLDER_ID = "File Or Folder Id";
         protected const string FILE_ID = "File Id";
         protected const string PARENT_FOLDER_ID = "Parent Folder Id";
         protected const string LOCAL_FILE_PATH = "Local File Path";
         protected const string PERMISSION = "Permission";
         protected const string NEW_FOLDER_NAME = "New Folder Name";
+        
+        /*OAuth2TokenResponse resp;
+        OAuthToken token*/
 
-        public AbstractStep() 
-        {
-            InputDataList = new List<DataDescription>() { new DataDescription(typeof(GoogleDriveCredential), CREDENTINAL_DATA) };
-        }
-
-        protected List<DataDescription> InputDataList;
         [PropertyHidden]
-        public DataDescription[] InputData
+        public virtual DataDescription[] InputData
         {
             get
             {
-                return InputDataList.ToArray();
-            }
-        }
-
-        protected abstract OutcomeScenarioData CorrectOutcomeScenario { get; }
-        public OutcomeScenarioData[] OutcomeScenarios
-        {
-            get
-            {
-                return new OutcomeScenarioData[]
-                {
-                       CorrectOutcomeScenario,
-                       new OutcomeScenarioData(ERROR_OUTCOME, new DataDescription(typeof(GoogleDriveErrorInfo), ERROR_OUTCOME_DATA_NAME))
+                return new DataDescription[] {
+                  new DataDescription(typeof(GoogleDriveCredential), CREDENTINAL_DATA),
+                  new DataDescription(typeof(GoogleDriveServiceAccountCredential), SERVICE_ACCOUNT_CREDENTINAL_DATA)
                 };
             }
         }
 
-        public ResultData Run(StepStartData data)
+        protected const int ERROR_OUTCOME_INDEX = 1;
+        protected const int RESULT_OUTCOME_INDEX = 0;
+        public virtual OutcomeScenarioData[] OutcomeScenarios
         {
-            GoogleDriveBaseResult res = ExecuteStep(data);
-
-            if (res.IsSucceed)
+            get
             {
-                var outputData = CorrectOutcomeScenario.OutputData;
-                var ExitPointName=CorrectOutcomeScenario.ExitPointName;
-
-                if (outputData!=null && outputData.Length > 0)
-                    return new ResultData(ExitPointName, new DataPair[] { new DataPair(outputData[0].Name, res.DataObj) });
-                else
-                    return new ResultData(ExitPointName);
+                return new OutcomeScenarioData[] {null, new OutcomeScenarioData(ERROR_OUTCOME, new DataDescription(typeof(GoogleDriveErrorInfo), ERROR_OUTCOME_DATA_NAME)) };
             }
-            else
-                return new ResultData(ERROR_OUTCOME, new DataPair[] { new DataPair(ERROR_OUTCOME_DATA_NAME, res.DataObj) });
         }
 
-        protected abstract GoogleDriveBaseResult ExecuteStep(StepStartData data);
+        private Connection CreateConnection(StepStartData data)
+        {
+            var credentinal = (GoogleDriveCredential)data.Data[CREDENTINAL_DATA];
+            var serviceAccountCredentinal = (GoogleDriveServiceAccountCredential)data.Data[SERVICE_ACCOUNT_CREDENTINAL_DATA];
+
+            if (credentinal!=null)
+                return Connection.Create(credentinal);
+            else if(serviceAccountCredentinal!=null)
+                return Connection.Create(serviceAccountCredentinal);
+            
+            throw new BusinessRuleException($"Step needs either {CREDENTINAL_DATA} or {SERVICE_ACCOUNT_CREDENTINAL_DATA}");
+        }
+
+        public ResultData Run(StepStartData data)
+        {
+            try
+            {
+                Connection connection = CreateConnection(data);
+                GoogleDriveBaseResult res = ExecuteStep(connection, data);
+
+                if (res.IsSucceed)
+                {
+                    var outputData = OutcomeScenarios[RESULT_OUTCOME_INDEX].OutputData;
+                    var exitPointName = OutcomeScenarios[RESULT_OUTCOME_INDEX].ExitPointName;
+
+                    if (outputData != null && outputData.Length > 0)
+                        return new ResultData(exitPointName, new DataPair[] { new DataPair(outputData[0].Name, res.DataObj) });
+                    else
+                        return new ResultData(exitPointName);
+                }
+                else
+                {
+                    return new ResultData(ERROR_OUTCOME, new DataPair[] { new DataPair(ERROR_OUTCOME_DATA_NAME, res) });
+                }
+            }
+            catch (Exception ex)
+            {
+                GoogleDriveErrorInfo ErrInfo = new GoogleDriveErrorInfo() { ErrorMessage = ex.ToString(), HttpErrorCode = null};
+                return new ResultData(ERROR_OUTCOME, new DataPair[] { new DataPair(ERROR_OUTCOME_DATA_NAME, ErrInfo) });
+                //throw new LoggedException("Error running step", ex);
+            }
+        }
+
+        protected  abstract GoogleDriveBaseResult ExecuteStep(Connection connection, StepStartData data);
 
     }
 }

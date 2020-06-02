@@ -10,7 +10,7 @@ using Google.Apis.Drive.v3.Data;
 
 namespace Decisions.GoogleDrive
 {
-    public static partial class GoogleDrive
+    public static partial class GoogleDriveUtility
     {
         public static GoogleDriveResultWithData<GoogleDriveFolder[]> GetFolders(Connection connection, string folderId=null)
         {
@@ -22,12 +22,12 @@ namespace Decisions.GoogleDrive
             return result;
         }
 
-        public static GoogleDriveResultWithData<GoogleDriveFolder> CreateFolder(Connection connection, string name, string folderId=null)
+        public static GoogleDriveResultWithData<GoogleDriveFolder> CreateFolder(Connection connection, string folderName, string parentFolderId=null)
         {
-            CorrectFolderId(ref folderId);
+            CorrectFolderId(ref parentFolderId);
             CheckConnectionOrException(connection);
 
-            File fileMetaData = new File {Name = name, MimeType = "application/vnd.google-apps.folder", Parents = new [] { folderId } };
+            File fileMetaData = new File {Name = folderName, MimeType = "application/vnd.google-apps.folder", Parents = new [] { parentFolderId } };
             FilesResource.CreateRequest request = connection.Service.Files.Create(fileMetaData);
             request.Fields = "id, name, mimeType, description, webViewLink";
 

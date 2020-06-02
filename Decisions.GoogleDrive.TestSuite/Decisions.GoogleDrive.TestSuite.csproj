@@ -73,9 +73,7 @@
   <ItemGroup>
     <Compile Include="FileStepTests.cs" />
     <Compile Include="FolderStepTests.cs" />
-    <Compile Include="UtilityTests\ConnectionTests.cs" />
-    <Compile Include="UtilityTests\FileTests.cs" />
-    <Compile Include="UtilityTests\FolderTests.cs" />
+    <Compile Include="ConnectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestData.cs" />
   </ItemGroup>

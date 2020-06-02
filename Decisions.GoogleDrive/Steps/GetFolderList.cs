@@ -1,6 +1,7 @@
 ﻿using DecisionsFramework.Design.ConfigurationStorage.Attributes;
 using DecisionsFramework.Design.Flow;
 using DecisionsFramework.Design.Flow.Mapping;
+using DecisionsFramework.Design.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,33 +14,32 @@ namespace Decisions.GoogleDrive
     [Writable]
     public class GetFolderList : AbstractStep
     {
-
-        protected override OutcomeScenarioData CorrectOutcomeScenario
+        [PropertyHidden]
+        public override DataDescription[] InputData
         {
             get
             {
-                return new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveFolder[]), RESULT));
+                var res = new List<DataDescription>(base.InputData);
+                res.Add(new DataDescription(typeof(string), PARENT_FOLDER_ID));
+                return res.ToArray();
             }
         }
-        /*protected override DataDescription ResultDataDescription
+
+        public override OutcomeScenarioData[] OutcomeScenarios
         {
             get
             {
-                return new DataDescription(typeof(GoogleDriveFolder[]), RESULT);
+                var res = base.OutcomeScenarios;
+                res[RESULT_OUTCOME_INDEX] = new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveFolder[]), RESULT));
+                return res;
             }
-        }*/
-
-        public GetFolderList()
-        {
-            InputDataList.Add(new DataDescription(typeof(string), PARENT_FOLDER_ID));
         }
 
-        protected override GoogleDriveBaseResult ExecuteStep(StepStartData data)
+        protected override GoogleDriveBaseResult ExecuteStep(Connection connection, StepStartData data)
         {
-            var credentinal = (GoogleDriveCredential)data.Data[CREDENTINAL_DATA];
             var FolderId = (string)data.Data[PARENT_FOLDER_ID];
 
-            return StepsCore.GetFolderList(credentinal, FolderId);
+            return GoogleDriveUtility.GetFolders(connection, FolderId); //StepsCore.GetFolderList(credentinal, FolderId);
         }
     }
 }

@@ -11,28 +11,33 @@ namespace Decisions.GoogleDriveTests
     [TestClass]
     public class FolderStepTests
     {
-        private readonly GoogleDriveCredential credentional = TestData.GetCredential();
         private GoogleDriveFolder testFolder;
+
+        private Connection GetConnection()
+        {
+            return Connection.Create(TestData.GetServiceAccountCredential());
+            //return Connection.Create(TestData.GetCredential());
+        }
 
         [TestInitialize]
         public void InitTests()
         {
-            testFolder = StepsCore.CreateFolder(credentional, null, TestData.TestFolderName).Data;
+            testFolder = GoogleDriveUtility.CreateFolder(GetConnection(), TestData.TestFolderName, null).Data;
         }
 
         [TestCleanupAttribute]
         public void CleanupTests()
         {
-            StepsCore.DeleteResource(credentional, testFolder.Id);
+            GoogleDriveUtility.DeleteResource(GetConnection(), testFolder.Id);
         }
 
         [TestMethod]
         public void ListFoldersTest()
         {
-            var rootFileList = StepsCore.GetFolderList(credentional, null);
+            var rootFileList = GoogleDriveUtility.GetFolders(GetConnection(), null);
             Assert.IsTrue(rootFileList.IsSucceed);
 
-            var testFolderFileList = StepsCore.GetFolderList(credentional, testFolder.Id);
+            var testFolderFileList = GoogleDriveUtility.GetFolders(GetConnection(), testFolder.Id);
             Assert.IsTrue(rootFileList.IsSucceed);
 
         }
@@ -43,14 +48,14 @@ namespace Decisions.GoogleDriveTests
             GoogleDriveResultWithData<GoogleDriveFolder> createdFolder = null;
             try
             {
-                createdFolder = StepsCore.CreateFolder(credentional, testFolder.Id, TestData.TestFolderName);
+                createdFolder = GoogleDriveUtility.CreateFolder(GetConnection(), TestData.TestFolderName, testFolder.Id);
                 Assert.IsTrue(createdFolder.IsSucceed);
                 Assert.IsNotNull(createdFolder.Data);
             }
             finally
             {
                 if (createdFolder != null)
-                    StepsCore.DeleteResource(credentional, createdFolder.Data.Id);
+                    GoogleDriveUtility.DeleteResource(GetConnection(), createdFolder.Data.Id);
             }
 
         }
@@ -62,15 +67,15 @@ namespace Decisions.GoogleDriveTests
             GoogleDriveResultWithData<GoogleDriveFolder> createdFolder = null;
             try
             {
-                createdFolder = StepsCore.CreateFolder(credentional, testFolder.Id, TestData.TestFolderName);
+                createdFolder = GoogleDriveUtility.CreateFolder(GetConnection(), TestData.TestFolderName, testFolder.Id);
                 Assert.IsTrue(createdFolder.IsSucceed);
 
-                var folderListBefore = StepsCore.GetFolderList(credentional, testFolder.Id);
+                var folderListBefore = GoogleDriveUtility.GetFolders(GetConnection(), testFolder.Id);
                 Assert.IsTrue(folderListBefore.IsSucceed);
 
-                StepsCore.DeleteResource(credentional, createdFolder.Data.Id);
+                GoogleDriveUtility.DeleteResource(GetConnection(), createdFolder.Data.Id);
 
-                var folderListAfter = StepsCore.GetFolderList(credentional, testFolder.Id);
+                var folderListAfter = GoogleDriveUtility.GetFolders(GetConnection(), testFolder.Id);
                 Assert.IsTrue(folderListAfter.IsSucceed);
 
                 Assert.AreEqual(1, folderListBefore.Data.Length - folderListAfter.Data.Length);
@@ -80,7 +85,7 @@ namespace Decisions.GoogleDriveTests
                 try
                 {
                     if (createdFolder != null)
-                        StepsCore.DeleteResource(credentional, createdFolder.Data.Id);
+                        GoogleDriveUtility.DeleteResource(GetConnection(), createdFolder.Data.Id);
                 }
                 catch { }
             }
@@ -90,7 +95,7 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void GetPermsTest()
         {
-            var perms = StepsCore.GetResourcePermissions(credentional, testFolder.Id);
+            var perms = GoogleDriveUtility.GetResourcePermissions(GetConnection(), testFolder.Id);
             Assert.IsTrue(perms.IsSucceed);
             Assert.IsTrue(perms.Data.Any(x => x.Role == GoogleDriveRole.owner && x.Type == GoogleDrivePermType.user));
         }
@@ -98,11 +103,11 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void SetPermsTest()
         {
-            var permission = StepsCore.SetResourcePermissions(credentional, testFolder.Id, new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer));
+            var permission = GoogleDriveUtility.SetResourcePermissions(GetConnection(), testFolder.Id, new GoogleDrivePermission(null, TestData.TestEmail, GoogleDrivePermType.user, GoogleDriveRole.writer));
             Assert.IsTrue(permission.IsSucceed);
             Assert.IsTrue(permission.Data.Id != "");
 
-            var perms = StepsCore.GetResourcePermissions(credentional, testFolder.Id);
+            var perms = GoogleDriveUtility.GetResourcePermissions(GetConnection(), testFolder.Id);
 
             var res = Enumerable.Any(perms.Data, (it) => { return it.Id == permission.Data.Id; });
             Assert.IsTrue(res);

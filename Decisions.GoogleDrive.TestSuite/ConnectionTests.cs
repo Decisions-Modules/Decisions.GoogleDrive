@@ -6,7 +6,7 @@ using Decisions.GoogleDrive;
 using Decisions.GoogleDriveTests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace DriveLibraryTests
+namespace Decisions.GoogleDriveTests
 {
      [TestClass]
     public class ConnectionTests
@@ -36,8 +36,15 @@ namespace DriveLibraryTests
         public void ConnectionTest()
         {
             Connection connection = Connection.Create(TestData.GetCredential());
-
             Assert.IsTrue(connection.IsConnected());
         }
+
+        [TestMethod]
+        public void ServiceAccountConnectionTest()
+        {
+            Connection connection = Connection.Create(TestData.GetServiceAccountCredential());
+            Assert.IsTrue(connection.IsConnected());
+        }
+
     }
 }

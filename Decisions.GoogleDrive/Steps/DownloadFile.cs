@@ -1,6 +1,7 @@
 ﻿using DecisionsFramework.Design.ConfigurationStorage.Attributes;
 using DecisionsFramework.Design.Flow;
 using DecisionsFramework.Design.Flow.Mapping;
+using DecisionsFramework.Design.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,28 +14,33 @@ namespace Decisions.GoogleDrive
     [Writable]
     public class DownloadFile : AbstractStep
     {
-
-        protected override OutcomeScenarioData CorrectOutcomeScenario
+        [PropertyHidden]
+        public override DataDescription[] InputData
         {
             get
             {
-                return new OutcomeScenarioData(DONE_OUTCOME);
+                var res = new List<DataDescription>(base.InputData);
+                res.Add(new DataDescription(typeof(string), FILE_ID));
+                res.Add(new DataDescription(typeof(string), LOCAL_FILE_PATH));
+                return res.ToArray();
+            }
+        }
+        public override OutcomeScenarioData[] OutcomeScenarios
+        {
+            get
+            {
+                var res = base.OutcomeScenarios;
+                res[RESULT_OUTCOME_INDEX] = new OutcomeScenarioData(DONE_OUTCOME); 
+                return res;
             }
         }
 
-        public DownloadFile()
+        protected override GoogleDriveBaseResult ExecuteStep(Connection connection, StepStartData data)
         {
-            InputDataList.Add(new DataDescription(typeof(string), FILE_ID));
-            InputDataList.Add(new DataDescription(typeof(string), LOCAL_FILE_PATH));
-        }
-
-        protected override GoogleDriveBaseResult ExecuteStep(StepStartData data)
-        {
-            var credentinal = (GoogleDriveCredential)data.Data[CREDENTINAL_DATA];
             var fileId = (string)data.Data[FILE_ID];
             var filePath = (string)data.Data[LOCAL_FILE_PATH];
 
-            return StepsCore.DownloadFile(credentinal, fileId, filePath);
+            return GoogleDriveUtility.DownloadFile(connection, fileId, filePath);
         }
     }
 }

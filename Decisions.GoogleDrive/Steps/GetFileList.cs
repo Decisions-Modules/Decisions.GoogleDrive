@@ -1,6 +1,7 @@
 ﻿using DecisionsFramework.Design.ConfigurationStorage.Attributes;
 using DecisionsFramework.Design.Flow;
 using DecisionsFramework.Design.Flow.Mapping;
+using DecisionsFramework.Design.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,25 +14,32 @@ namespace Decisions.GoogleDrive
     [Writable]
     public class GetFileList : AbstractStep
     {
-        protected override OutcomeScenarioData CorrectOutcomeScenario
+        [PropertyHidden]
+        public override DataDescription[] InputData
         {
             get
             {
-                return new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveFile[]), RESULT));
+                var res = new List<DataDescription>(base.InputData);
+                res.Add(new DataDescription(typeof(string), PARENT_FOLDER_ID));
+                return res.ToArray();
             }
         }
 
-        public GetFileList()
+        public override OutcomeScenarioData[] OutcomeScenarios
         {
-            InputDataList.Add(new DataDescription(typeof(string), PARENT_FOLDER_ID));
+            get
+            {
+                var res = base.OutcomeScenarios;
+                res[RESULT_OUTCOME_INDEX] = new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveFile[]), RESULT));
+                return res;
+            }
         }
 
-        protected override GoogleDriveBaseResult ExecuteStep(StepStartData data)
+        protected override GoogleDriveBaseResult ExecuteStep(Connection connection, StepStartData data)
         {
-            var credentinal = (GoogleDriveCredential)data.Data[CREDENTINAL_DATA];
             var FolderId = (string)data.Data[PARENT_FOLDER_ID];
 
-            return StepsCore.GetFileList(credentinal, FolderId);
+            return GoogleDriveUtility.GetFiles(connection, FolderId);
         }
     }
 }

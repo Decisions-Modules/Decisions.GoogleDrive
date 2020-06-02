@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Decisions.GoogleDrive
 {
-    public static partial class GoogleDrive
+    public static partial class GoogleDriveUtility
     {
         private static void CheckConnectionOrException(Connection connection)
         {
@@ -72,6 +72,8 @@ namespace Decisions.GoogleDrive
             }
         }
 
+       
+
         private static TResult ExecuteRequest<TRequest, TResponse, TResult>(TRequest request, Action<TResponse,TResult> processAnswer)
                             where TResult : GoogleDriveBaseResult, new()
                             where TRequest : ClientServiceRequest<TResponse>
@@ -80,16 +82,15 @@ namespace Decisions.GoogleDrive
             try
             {
                 var resp = request.Execute();
-                if(processAnswer!=null)
+                if (processAnswer != null)
                     processAnswer(resp, result);
                 result.IsSucceed = true;
 
             }
-            catch (Google.GoogleApiException ex)
+            catch (Exception exception)
             {
-                result.ErrorMessage = (ex.Message??"") + (ex.Error?.Message??"");
-                result.HttpErrorCode = ex.HttpStatusCode;
-                result.IsSucceed = false;
+                if(!result.FillFromException(exception))
+                    throw;
             }
 
             return result;
@@ -105,24 +106,17 @@ namespace Decisions.GoogleDrive
             }
             else
             {
-                if (status.Exception is Google.GoogleApiException)
-                {
-                    Google.GoogleApiException ex = (Google.GoogleApiException)status.Exception;
-                    return new GoogleDriveBaseResult()
-                    {
-                        ErrorMessage = ex.Error.Message,
-                        HttpErrorCode = ex.HttpStatusCode,
-                        IsSucceed = false
-                    };
-                }
-                throw status.Exception;
+                var result = new GoogleDriveBaseResult();
+                if (result.FillFromException(status.Exception))
+                    return result;
+                throw status.Exception;              
             }
         }
 
         private static GoogleDriveResultWithData<GoogleDriveFile> UploadRequest(Google.Apis.Drive.v3.FilesResource.CreateMediaUpload request)
         {
-            var result = request.Upload();
-            if (result.Status == UploadStatus.Completed)
+            var status = request.Upload();
+            if (status.Status == UploadStatus.Completed)
             {
                 var file = request.ResponseBody;
                 if (file != null)
@@ -137,17 +131,11 @@ namespace Decisions.GoogleDrive
                     return new GoogleDriveResultWithData<GoogleDriveFile>(){ IsSucceed = false, ErrorMessage = "Unknown error" };
             }
 
-            if (result.Exception is Google.GoogleApiException)
-            {
-                Google.GoogleApiException ex = (Google.GoogleApiException)result.Exception;
-                return new GoogleDriveResultWithData<GoogleDriveFile>()
-                {
-                    ErrorMessage = ex.Error.Message,
-                    HttpErrorCode = ex.HttpStatusCode,
-                    IsSucceed = false
-                };
-            }
-            throw result.Exception;
+            var result = new GoogleDriveResultWithData<GoogleDriveFile>();
+            if (result.FillFromException(status.Exception))
+                return result;
+            throw status.Exception;
+          
         }
 
         const string FolderMimeType = "application/vnd.google-apps.folder";

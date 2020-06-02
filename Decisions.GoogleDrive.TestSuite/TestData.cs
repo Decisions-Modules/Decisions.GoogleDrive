@@ -20,6 +20,16 @@ namespace Decisions.GoogleDriveTests
             };
         }
 
+        public static GoogleDriveServiceAccountCredential GetServiceAccountCredential()
+        {
+
+            return new GoogleDriveServiceAccountCredential
+            {
+                Email = "service account email",
+                PrivateKey = "service account's private key"
+            };
+        }
+
         public static string LocalTestDir = @"C:\data\tmp\";
         public static string TestFileName = "test.txt";
         public static string TestFolderName = "_TestFolder_";

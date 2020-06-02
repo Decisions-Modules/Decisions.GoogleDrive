@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DecisionsFramework.Design.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -16,5 +17,15 @@ namespace Decisions.GoogleDrive
         public string ClientSecret = "";
         [DataMember]
         public string DataStore = "";
+    }
+
+    [DataContract]
+    public class GoogleDriveServiceAccountCredential
+    {
+        [DataMember]
+        public string Email = "";
+        [DataMember]
+        [LongTextPropertyEditorAttribute]
+        public string PrivateKey = "";
     }
 }

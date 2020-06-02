@@ -87,7 +87,6 @@
     <Compile Include="Data\GoogleDriveFile.cs" />
     <Compile Include="Data\GoogleDrivePermission.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Steps\StepsCore.cs" />
     <Compile Include="Utility\GoogleDriveUtility.cs" />
   </ItemGroup>
   <ItemGroup>
