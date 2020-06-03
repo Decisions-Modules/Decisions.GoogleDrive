@@ -19,9 +19,7 @@ namespace Decisions.GoogleDrive
         {
             get
             {
-                var res = new List<DataDescription>(base.InputData);
-                res.Add(new DataDescription(typeof(string), PARENT_FOLDER_ID));
-                return res.ToArray();
+                return Concat(base.InputData, new DataDescription(typeof(string), PARENT_FOLDER_ID));
             }
         }
 
@@ -29,9 +27,7 @@ namespace Decisions.GoogleDrive
         {
             get
             {
-                var res = base.OutcomeScenarios;
-                res[RESULT_OUTCOME_INDEX] = new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveFolder[]), RESULT));
-                return res;
+                return Concat(base.OutcomeScenarios, new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveFolder[]), RESULT)) );
             }
         }
 

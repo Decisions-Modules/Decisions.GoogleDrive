@@ -19,27 +19,29 @@ namespace Decisions.GoogleDrive
         [DataMember] public HttpStatusCode? HttpErrorCode { get; set; }
     }
 
-    public class GoogleDriveBaseResult: GoogleDriveErrorInfo
+    public class GoogleDriveBaseResult
     {
-        public bool IsSucceed { get; set; }
+        public bool IsSucceed;
+        public GoogleDriveErrorInfo ErrorInfo = new GoogleDriveErrorInfo();
         public virtual object DataObj { get { return null; } }
 
         public bool FillFromException(Exception exception)
         {
+            IsSucceed = false;
+            ErrorInfo = new GoogleDriveErrorInfo();
+
             if (exception is Google.GoogleApiException)
             {
                 var ex = (Google.GoogleApiException)exception;
-                ErrorMessage = ex.Error?.Message ?? (ex.Message ?? ex.ToString());
-                HttpErrorCode = ex.HttpStatusCode;
-                IsSucceed = false;
+                ErrorInfo.ErrorMessage = ex.Error?.Message ?? (ex.Message ?? ex.ToString());
+                ErrorInfo.HttpErrorCode = ex.HttpStatusCode;
                 return true;
             }
             else if (exception is Google.Apis.Auth.OAuth2.Responses.TokenResponseException)
             {
                 var ex = (Google.Apis.Auth.OAuth2.Responses.TokenResponseException)exception;
-                ErrorMessage = ex.Error?.ToString() ?? (ex.Message ?? ex.ToString());
-                HttpErrorCode = ex.StatusCode;
-                IsSucceed = false;
+                ErrorInfo.ErrorMessage = ex.Error?.ToString() ?? (ex.Message ?? ex.ToString());
+                ErrorInfo.HttpErrorCode = ex.StatusCode;
                 return true;
             }
 
@@ -57,8 +59,7 @@ namespace Decisions.GoogleDrive
 
         internal GoogleDriveResultWithData(GoogleDriveBaseResult baseResult)
         {
-            ErrorMessage = baseResult.ErrorMessage;
-            HttpErrorCode = baseResult.HttpErrorCode;
+            ErrorInfo = baseResult.ErrorInfo;
             IsSucceed = baseResult.IsSucceed;
         }
         

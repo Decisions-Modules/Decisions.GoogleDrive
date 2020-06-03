@@ -13,13 +13,13 @@ namespace Decisions.GoogleDrive
 {
     [DataContract]
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum GoogleDriveResourceType { Unavailable = 0, File = 1, Folder=2 }
+    public enum GoogleDriveResourceType { Unavailable = 0, File = 1, Folder = 2 }
 
     [DataContract]
-    public class GoogleDriveFile
+    public abstract class GoogleDriveResource
     {
 
-        internal GoogleDriveFile(string id, string name, string desc, string link)
+        internal GoogleDriveResource(string id, string name, string desc, string link)
         {
             Id = id;
             Name = name;
@@ -36,5 +36,21 @@ namespace Decisions.GoogleDrive
         [DataMember]
         public readonly string SharingLink;
 
+    }
+
+    [DataContract]
+    public class GoogleDriveFile : GoogleDriveResource
+    {
+        internal GoogleDriveFile(string id, string name, string desc, string link) : base(id, name, desc, link)
+        {
+        }
+    }
+
+    [DataContract]
+    public class GoogleDriveFolder : GoogleDriveResource
+    {
+        internal GoogleDriveFolder(string id, string name, string desc, string link) : base(id, name, desc, link)
+        {
+        }
     }
 }

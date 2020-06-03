@@ -128,7 +128,7 @@ namespace Decisions.GoogleDrive
                     };
                 }
                 else
-                    return new GoogleDriveResultWithData<GoogleDriveFile>(){ IsSucceed = false, ErrorMessage = "Unknown error" };
+                    return new GoogleDriveResultWithData<GoogleDriveFile>(){ IsSucceed = false, ErrorInfo = new GoogleDriveErrorInfo { ErrorMessage="Unknown error" } };
             }
 
             var result = new GoogleDriveResultWithData<GoogleDriveFile>();
@@ -190,7 +190,7 @@ namespace Decisions.GoogleDrive
                     res.Data = GoogleDriveResourceType.File;
             });
 
-            if (result.HttpErrorCode == HttpStatusCode.NotFound)
+            if (result.ErrorInfo.HttpErrorCode == HttpStatusCode.NotFound)
             {
                 result.IsSucceed = true;
                 result.Data = GoogleDriveResourceType.Unavailable;

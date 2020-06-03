@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Decisions.GoogleDriveTests
 {
     [TestClass]
-    public class FileStepTests
+    public class FileTests
     {
         string TestFileFullName { get { return TestData.LocalTestDir + TestData.TestFileName; } }
 

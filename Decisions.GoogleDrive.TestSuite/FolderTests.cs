@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Decisions.GoogleDriveTests
 {
     [TestClass]
-    public class FolderStepTests
+    public class FolderTests
     {
         private GoogleDriveFolder testFolder;
 

@@ -71,8 +71,8 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileStepTests.cs" />
-    <Compile Include="FolderStepTests.cs" />
+    <Compile Include="FileTests.cs" />
+    <Compile Include="FolderTests.cs" />
     <Compile Include="ConnectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestData.cs" />

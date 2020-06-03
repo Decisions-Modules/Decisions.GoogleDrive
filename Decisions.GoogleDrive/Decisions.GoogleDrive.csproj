@@ -83,8 +83,7 @@
     <Compile Include="Utility\GoogleDriveFiles.cs" />
     <Compile Include="Utility\GoogleDriveFolders.cs" />
     <Compile Include="Data\GoogleDriveCredential.cs" />
-    <Compile Include="Data\GoogleDriveFolder.cs" />
-    <Compile Include="Data\GoogleDriveFile.cs" />
+    <Compile Include="Data\GoogleDriveResource.cs" />
     <Compile Include="Data\GoogleDrivePermission.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\GoogleDriveUtility.cs" />

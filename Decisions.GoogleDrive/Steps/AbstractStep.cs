@@ -21,13 +21,13 @@ namespace Decisions.GoogleDrive
     public abstract class AbstractStep : ISyncStep, IDataConsumer, IDataProducer
     {
         public const string GoogleDriveCategory = "Integration/Google Drive";
-        
+
         protected const string ERROR_OUTCOME = "Error";
         protected const string RESULT_OUTCOME = "Result";
         protected const string DONE_OUTCOME = "Done";
         protected const string ERROR_OUTCOME_DATA_NAME = "Error info";
         protected const string RESULT = "RESULT";
-        
+
 
         protected const string CREDENTINAL_DATA = "Credentinal";
         protected const string SERVICE_ACCOUNT_CREDENTINAL_DATA = "Service Account Credentinal";
@@ -37,9 +37,18 @@ namespace Decisions.GoogleDrive
         protected const string LOCAL_FILE_PATH = "Local File Path";
         protected const string PERMISSION = "Permission";
         protected const string NEW_FOLDER_NAME = "New Folder Name";
-        
+
         /*OAuth2TokenResponse resp;
         OAuthToken token*/
+
+        protected static T[] Concat<T>(T[] array, params T[] newItems)
+        {
+            var res = new List<T>(array);
+            res.AddRange(newItems);
+            T[] resArr= res.ToArray();
+            return resArr;
+        }
+
 
         [PropertyHidden]
         public virtual DataDescription[] InputData
@@ -53,13 +62,13 @@ namespace Decisions.GoogleDrive
             }
         }
 
-        protected const int ERROR_OUTCOME_INDEX = 1;
-        protected const int RESULT_OUTCOME_INDEX = 0;
+        private const int ERROR_OUTCOME_INDEX = 0;
+        private const int RESULT_OUTCOME_INDEX = 1;
         public virtual OutcomeScenarioData[] OutcomeScenarios
         {
             get
             {
-                return new OutcomeScenarioData[] {null, new OutcomeScenarioData(ERROR_OUTCOME, new DataDescription(typeof(GoogleDriveErrorInfo), ERROR_OUTCOME_DATA_NAME)) };
+                return new OutcomeScenarioData[] {new OutcomeScenarioData(ERROR_OUTCOME, new DataDescription(typeof(GoogleDriveErrorInfo), ERROR_OUTCOME_DATA_NAME)) };
             }
         }
 
@@ -95,7 +104,7 @@ namespace Decisions.GoogleDrive
                 }
                 else
                 {
-                    return new ResultData(ERROR_OUTCOME, new DataPair[] { new DataPair(ERROR_OUTCOME_DATA_NAME, res) });
+                    return new ResultData(ERROR_OUTCOME, new DataPair[] { new DataPair(ERROR_OUTCOME_DATA_NAME, res.ErrorInfo) });
                 }
             }
             catch (Exception ex)
