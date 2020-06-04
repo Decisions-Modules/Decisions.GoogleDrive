@@ -1,0 +1,12 @@
+*.dll
+*.pdb
+*.zip
+
+Module.Modified.xml
+Decisions.GoogleDrive.TestSuite/bin/
+Decisions.GoogleDrive.TestSuite/obj/
+Decisions.GoogleDrive/bin/
+Decisions.GoogleDrive/obj/
+Decisions.GoogleDrive/packages/
+Decisions.GoogleDrive/.vs
+
