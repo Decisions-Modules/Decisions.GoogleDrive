@@ -19,16 +19,16 @@ namespace Decisions.GoogleDrive
         {
             get
             {
-                return Concat(base.InputData,
-                    new DataDescription(typeof(string), PARENT_FOLDER_ID),
-                    new DataDescription(typeof(string), NEW_FOLDER_NAME));
+                var data = new DataDescription[] {  new DataDescription(typeof(string), PARENT_FOLDER_ID), new DataDescription(typeof(string), NEW_FOLDER_NAME) };
+                return base.InputData.Concat(data).ToArray();
             }
         }
         public override OutcomeScenarioData[] OutcomeScenarios
         {
             get
             {
-                return Concat(base.OutcomeScenarios, new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveFolder), RESULT)) );
+                var data = new OutcomeScenarioData[] { new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDriveFolder), RESULT)) };
+                return base.OutcomeScenarios.Concat(data).ToArray();
             }
         }
 

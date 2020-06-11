@@ -39,6 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DecisionsFramework, Version=6.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Decisions.GoogleDrive\bin\Debug\DecisionsFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Apis, Version=1.45.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\Decisions.GoogleDrive\packages\Google.Apis.1.45.0\lib\net45\Google.Apis.dll</HintPath>
     </Reference>

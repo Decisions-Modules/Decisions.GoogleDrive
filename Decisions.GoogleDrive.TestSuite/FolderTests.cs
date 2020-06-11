@@ -15,8 +15,7 @@ namespace Decisions.GoogleDriveTests
 
         private Connection GetConnection()
         {
-            return Connection.Create(TestData.GetServiceAccountCredential());
-            //return Connection.Create(TestData.GetCredential());
+            return TestData.GetConnection();
         }
 
         [TestInitialize]

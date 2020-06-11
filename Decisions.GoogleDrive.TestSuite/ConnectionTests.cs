@@ -15,7 +15,7 @@ namespace Decisions.GoogleDriveTests
         [ExpectedException(typeof(System.ArgumentNullException))]
         public void NoClientSecretTest()
         {
-            var credential = TestData.GetCredential();
+            var credential = TestData.GetUserCredential();
             credential.ClientId = "";
             credential.ClientSecret = "";
 
@@ -26,7 +26,7 @@ namespace Decisions.GoogleDriveTests
         [ExpectedException(typeof(DirectoryNotFoundException))]
         public void InvalidDataStoreTest()
         {
-            var credential = TestData.GetCredential();
+            var credential = TestData.GetUserCredential();
             credential.DataStore = "D:/Okeysdfd/sdfsdhgf/dsfsf";
 
             Connection connection = Connection.Create(credential);
@@ -35,7 +35,7 @@ namespace Decisions.GoogleDriveTests
         [TestMethod]
         public void ConnectionTest()
         {
-            Connection connection = Connection.Create(TestData.GetCredential());
+            Connection connection = Connection.Create(TestData.GetUserCredential());
             Assert.IsTrue(connection.IsConnected());
         }
 
