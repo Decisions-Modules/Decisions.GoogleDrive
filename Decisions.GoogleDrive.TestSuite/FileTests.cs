@@ -20,8 +20,7 @@ namespace Decisions.GoogleDriveTests
 
         private Connection GetConnection()
         {
-            return Connection.Create(TestData.GetServiceAccountCredential());
-            //return Connection.Create(TestData.GetCredential());
+            return TestData.GetConnection();
         }
 
         [TestInitialize]
@@ -34,7 +33,6 @@ namespace Decisions.GoogleDriveTests
             stream.Close();
 
             testFolder = GoogleDriveUtility.CreateFolder(GetConnection(), TestData.TestFolderName, null).Data;
-
         }
 
         [TestCleanupAttribute]
@@ -66,14 +64,14 @@ namespace Decisions.GoogleDriveTests
         }
 
         [TestMethod]
-        public void ListFilesTest()
+        public void GetFileListTest()
         {
                 var rootFileList = GoogleDriveUtility.GetFiles(GetConnection(), null);
                 Assert.IsTrue(rootFileList.IsSucceed);
         }
         
         [TestMethod]
-        public void ListFilesInFolderTest()
+        public void GetLongFileListTest()
         {
             const int FILE_COUNT = 110;
             List<GoogleDriveFile> uploadedFiles = new List<GoogleDriveFile>(FILE_COUNT);

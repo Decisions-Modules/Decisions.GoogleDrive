@@ -35,7 +35,7 @@ namespace Decisions.GoogleDrive
 
             try
             {
-                using (System.IO.FileStream stream = System.IO.File.OpenWrite(localFilePath))
+                using (System.IO.FileStream stream = System.IO.File.Create(localFilePath))
                 {
                     var request = connection.Service.Files.Get(fileId);
                     if (progressTracker != null)
@@ -62,8 +62,8 @@ namespace Decisions.GoogleDrive
             if(fileName==null)
                 fileName = System.IO.Path.GetFileName(localFilePath);
 
-            if (string.IsNullOrEmpty(fileName))
-                throw new ArgumentNullException("fileName", "fileName cannot be null or empty.");
+            if (string.IsNullOrEmpty(localFilePath))
+                throw new ArgumentNullException("localFilePath", "localFilePath cannot be null or empty.");
 
             using (System.IO.FileStream stream = System.IO.File.OpenRead(localFilePath))
                 try

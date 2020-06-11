@@ -1,22 +1,16 @@
 ﻿using Decisions.OAuth;
 using DecisionsFramework;
+using DecisionsFramework.Data.ORMapper;
 using DecisionsFramework.Design.ConfigurationStorage.Attributes;
 using DecisionsFramework.Design.Flow;
 using DecisionsFramework.Design.Flow.Mapping;
-using DecisionsFramework.Design.Flow.Mapping.InputImpl;
 using DecisionsFramework.Design.Properties;
 using DecisionsFramework.ServiceLayer.Services.ContextData;
-using DecisionsFramework.ServiceLayer.Services.OAuth2;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Decisions.GoogleDrive
 {
-
-
     [Writable]
     public abstract class AbstractStep : ISyncStep, IDataConsumer, IDataProducer
     {
@@ -28,27 +22,13 @@ namespace Decisions.GoogleDrive
         protected const string ERROR_OUTCOME_DATA_NAME = "Error info";
         protected const string RESULT = "RESULT";
 
-
         protected const string CREDENTINAL_DATA = "Credentinal";
-        protected const string SERVICE_ACCOUNT_CREDENTINAL_DATA = "Service Account Credentinal";
         protected const string FILE_OR_FOLDER_ID = "File Or Folder Id";
         protected const string FILE_ID = "File Id";
         protected const string PARENT_FOLDER_ID = "Parent Folder Id";
         protected const string LOCAL_FILE_PATH = "Local File Path";
         protected const string PERMISSION = "Permission";
         protected const string NEW_FOLDER_NAME = "New Folder Name";
-
-        /*OAuth2TokenResponse resp;
-        OAuthToken token*/
-
-        protected static T[] Concat<T>(T[] array, params T[] newItems)
-        {
-            var res = new List<T>(array);
-            res.AddRange(newItems);
-            T[] resArr= res.ToArray();
-            return resArr;
-        }
-
 
         [PropertyHidden]
         public virtual DataDescription[] InputData
@@ -57,7 +37,6 @@ namespace Decisions.GoogleDrive
             {
                 return new DataDescription[] {
                   new DataDescription(typeof(GoogleDriveCredential), CREDENTINAL_DATA),
-                  new DataDescription(typeof(GoogleDriveServiceAccountCredential), SERVICE_ACCOUNT_CREDENTINAL_DATA)
                 };
             }
         }
@@ -72,17 +51,33 @@ namespace Decisions.GoogleDrive
             }
         }
 
+        private OAuthToken FindToken(string id)
+        {
+            ORM<OAuthToken> orm = new ORM<OAuthToken>();
+            var token = orm.Fetch(id);
+            if (token != null)
+                return token;
+            throw new EntityNotFoundException($"Can not find token with TokenId=\"{id}\"");
+        }
+
         private Connection CreateConnection(StepStartData data)
         {
             var credentinal = (GoogleDriveCredential)data.Data[CREDENTINAL_DATA];
-            var serviceAccountCredentinal = (GoogleDriveServiceAccountCredential)data.Data[SERVICE_ACCOUNT_CREDENTINAL_DATA];
 
-            if (credentinal!=null)
-                return Connection.Create(credentinal);
-            else if(serviceAccountCredentinal!=null)
-                return Connection.Create(serviceAccountCredentinal);
+            if (credentinal != null)
+            {
+                switch(credentinal.CredentinalType)
+                {
+                    case GoogleDriveCredentialType.ServiceAccount:
+                        return Connection.Create(credentinal.ServiceAccount);
+
+                    case GoogleDriveCredentialType.Token:
+                        var token = FindToken(credentinal.Token);
+                        return Connection.Create(token.TokenData, token.ConsumerKey, token.ConsumerSecret );
+                }
+            }
             
-            throw new BusinessRuleException($"Step needs either {CREDENTINAL_DATA} or {SERVICE_ACCOUNT_CREDENTINAL_DATA}");
+            throw new BusinessRuleException($"Step needs {CREDENTINAL_DATA}");
         }
 
         public ResultData Run(StepStartData data)
@@ -111,11 +106,9 @@ namespace Decisions.GoogleDrive
             {
                 GoogleDriveErrorInfo ErrInfo = new GoogleDriveErrorInfo() { ErrorMessage = ex.ToString(), HttpErrorCode = null};
                 return new ResultData(ERROR_OUTCOME, new DataPair[] { new DataPair(ERROR_OUTCOME_DATA_NAME, ErrInfo) });
-                //throw new LoggedException("Error running step", ex);
             }
         }
 
         protected  abstract GoogleDriveBaseResult ExecuteStep(Connection connection, StepStartData data);
-
     }
 }

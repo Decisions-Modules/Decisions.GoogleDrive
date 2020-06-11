@@ -12,14 +12,15 @@ namespace Decisions.GoogleDrive
 {
     [AutoRegisterStep("Get Resource Permission", GoogleDriveCategory)]
     [Writable]
-    public class GetResultPermission : AbstractStep
+    public class GetResourcePermission : AbstractStep
     {
         [PropertyHidden]
         public override DataDescription[] InputData
         {
             get
             {
-                return Concat(base.InputData, new DataDescription(typeof(string), FILE_OR_FOLDER_ID));
+                var data = new DataDescription[] { new DataDescription(typeof(string), FILE_OR_FOLDER_ID) };
+                return base.InputData.Concat(data).ToArray();
             }
         }
 
@@ -27,7 +28,8 @@ namespace Decisions.GoogleDrive
         {
             get
             {
-                return Concat(base.OutcomeScenarios, new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDrivePermission[]), RESULT)) );
+                var data = new OutcomeScenarioData[] { new OutcomeScenarioData(RESULT_OUTCOME, new DataDescription(typeof(GoogleDrivePermission[]), RESULT)) };
+                return base.OutcomeScenarios.Concat(data).ToArray();
             }
         }
 

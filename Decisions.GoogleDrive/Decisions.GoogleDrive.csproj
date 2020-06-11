@@ -76,7 +76,7 @@
     <Compile Include="Steps\DownloadFile.cs" />
     <Compile Include="Steps\GetFileList.cs" />
     <Compile Include="Steps\GetFolderList.cs" />
-    <Compile Include="Steps\GetResultPermission.cs" />
+    <Compile Include="Steps\GetResourcePermission.cs" />
     <Compile Include="Steps\SetResourcePermission.cs" />
     <Compile Include="Steps\UploadFile.cs" />
     <Compile Include="Utility\Connection.cs" />
