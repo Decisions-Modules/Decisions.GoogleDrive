@@ -96,7 +96,7 @@ namespace Decisions.GoogleDrive
                 AccessToken = accessToken,
                 ExpiresInSeconds = 3599,
                 Issued  = DateTime.Now,
-                IssuedUtc = DateTime.Now,
+                IssuedUtc = DateTime.UtcNow,
                 TokenType = "Bearer",
             };
 
