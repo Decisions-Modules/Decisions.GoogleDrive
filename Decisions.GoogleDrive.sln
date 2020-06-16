@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decisions.GoogleDrive", "Decisions.GoogleDrive.csproj", "{C3CEB50E-4797-4A22-86A5-8060E610447C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decisions.GoogleDrive", ".\Decisions.GoogleDrive\Decisions.GoogleDrive.csproj", "{C3CEB50E-4797-4A22-86A5-8060E610447C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decisions.GoogleDrive.TestSuite", "..\Decisions.GoogleDrive.TestSuite\Decisions.GoogleDrive.TestSuite.csproj", "{E4A927B7-ACF1-42E9-B5DD-B7BEC7C3D8E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decisions.GoogleDrive.TestSuite", ".\Decisions.GoogleDrive.TestSuite\Decisions.GoogleDrive.TestSuite.csproj", "{E4A927B7-ACF1-42E9-B5DD-B7BEC7C3D8E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
