@@ -190,7 +190,7 @@ namespace Decisions.GoogleDrive
                     res.Data = GoogleDriveResourceType.File;
             });
 
-            if (result.ErrorInfo.HttpErrorCode == HttpStatusCode.NotFound)
+            if (result.ErrorInfo.HttpErrorCode == (int)HttpStatusCode.NotFound)
             {
                 result.IsSucceed = true;
                 result.Data = GoogleDriveResourceType.Unavailable;

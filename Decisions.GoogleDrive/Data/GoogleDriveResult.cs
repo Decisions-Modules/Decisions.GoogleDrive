@@ -4,19 +4,17 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Decisions.GoogleDrive
 {
-
     [DataContract]
     public class GoogleDriveErrorInfo
     {
         [DataMember] public string ErrorMessage { get; set; }
-        [DataMember] public HttpStatusCode? HttpErrorCode { get; set; }
+        [DataMember] public int? HttpErrorCode { get; set; }
     }
 
     public class GoogleDriveBaseResult
@@ -34,14 +32,15 @@ namespace Decisions.GoogleDrive
             {
                 var ex = (Google.GoogleApiException)exception;
                 ErrorInfo.ErrorMessage = ex.Error?.Message ?? (ex.Message ?? ex.ToString());
-                ErrorInfo.HttpErrorCode = ex.HttpStatusCode;
+                ErrorInfo.HttpErrorCode = (int)ex.HttpStatusCode;
                 return true;
             }
             else if (exception is Google.Apis.Auth.OAuth2.Responses.TokenResponseException)
             {
                 var ex = (Google.Apis.Auth.OAuth2.Responses.TokenResponseException)exception;
                 ErrorInfo.ErrorMessage = ex.Error?.ToString() ?? (ex.Message ?? ex.ToString());
-                ErrorInfo.HttpErrorCode = ex.StatusCode;
+                if(ex.StatusCode!=null)
+                    ErrorInfo.HttpErrorCode = (int)ex.StatusCode;
                 return true;
             }
 
