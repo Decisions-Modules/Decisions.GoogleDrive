@@ -13,7 +13,7 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DecisionsFramework, Version=7.3.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="DecisionsFramework, Version=7.2.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>C:\Program Files\Decisions\Decisions Server\bin\DecisionsFramework.dll</HintPath>
     </Reference>
   </ItemGroup>
