@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -14,6 +14,7 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Requests;
 using Google.Apis.Upload;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Decisions.GoogleDrive
 {
@@ -65,17 +66,26 @@ namespace Decisions.GoogleDrive
             if (string.IsNullOrEmpty(localFilePath))
                 throw new ArgumentNullException("localFilePath", "localFilePath cannot be null or empty.");
 
+            //MimeMapping is not part of .Net Core so we have to do it a different way
+            FileExtensionContentTypeProvider provider = new FileExtensionContentTypeProvider();
+            string mimeType;
+
+            if (!provider.TryGetContentType(fileName, out mimeType))
+            {
+                mimeType = "application/octet-stream";
+            }
+
             using (System.IO.FileStream stream = System.IO.File.OpenRead(localFilePath))
                 try
                 {
                     var fileMetadata = new File()
                     {
                         Name = fileName,
-                        MimeType = MimeMapping.GetMimeMapping(fileName),
+                        MimeType = mimeType,
                         Parents = new List<string> { parentFolderId }
                     };
 
-                    var request = connection.Service.Files.Create(fileMetadata, stream, MimeMapping.GetMimeMapping(fileName));
+                    var request = connection.Service.Files.Create(fileMetadata, stream, mimeType);
                     request.Fields = "id, name, mimeType, description, webViewLink";
 
                     if (progessUpdate != null)
