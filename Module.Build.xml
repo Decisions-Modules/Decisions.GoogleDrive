@@ -4,6 +4,13 @@
 		<CoreServicesDlls>
 		  <string>.\Decisions.GoogleDrive\obj\Debug\net5.0\win-x64\Decisions.GoogleDrive.dll</string>
 		</CoreServicesDlls>
+		<ReferenceDlls>
+			<string>.\Decisions.GoogleDrive\obj\Google.Apis.Auth.dll</string>
+			<string>.\Decisions.GoogleDrive\obj\Google.Apis.Auth.PlatformServices.dll</string>
+			<string>.\Decisions.GoogleDrive\obj\Google.Apis.Core.dll</string>
+			<string>.\Decisions.GoogleDrive\obj\Google.Apis.dll</string>
+			<string>.\Decisions.GoogleDrive\obj\Google.Apis.Drive.v3.dll</string>
+		</ReferenceDlls>
 		<CliDlls/>
 		<WebPages/>
 		<SilverlightDlls/>
