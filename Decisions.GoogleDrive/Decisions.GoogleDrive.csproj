@@ -3,11 +3,11 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DecisionsSDK" Version="7.2.4" />
+    <PackageReference Include="DecisionsSDK" Version="7.10.0-beta" />
     <PackageReference Include="Google.Apis.Drive.v3" Version="1.51.0.2265" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

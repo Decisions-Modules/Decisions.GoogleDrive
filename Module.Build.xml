@@ -2,7 +2,7 @@
 <CreateModuleInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<Resources NoComponents="true">
 		<CoreServicesDlls>
-		  <string>.\Decisions.GoogleDrive\obj\Debug\net5.0\win-x64\Decisions.GoogleDrive.dll</string>
+		  <string>.\Decisions.GoogleDrive\obj\Debug\net6.0\win-x64\Decisions.GoogleDrive.dll</string>
 		</CoreServicesDlls>
 		<ReferenceDlls>
 			<string>.\Decisions.GoogleDrive\obj\Google.Apis.Auth.dll</string>
@@ -20,7 +20,7 @@
 		<ObjectsToImport/>
 		<MsSqlScript/>
 	</Resources>
-	<Version/>
+	<Version>7.10</Version>
 	<ImagePath>./image.png</ImagePath>
 	<Description>Module to manage files and folders in GoogleDrive.</Description>
 </CreateModuleInfo>
