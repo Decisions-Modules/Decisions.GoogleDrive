@@ -1,0 +1,27 @@
+{
+    "Resources": {
+		"NoComponents": true,
+		"CoreServicesDlls": [
+			"./Decisions.GoogleDrive/obj/Decisions.GoogleDrive.dll"
+		],
+		"ReferenceDlls":
+        [
+			"./Decisions.GoogleDrive/obj/Google.Apis.Auth.dll",
+			"./Decisions.GoogleDrive/obj/Google.Apis.Auth.PlatformServices.dll",
+			"./Decisions.GoogleDrive/obj/Google.Apis.Core.dll",
+			"./Decisions.GoogleDrive/obj/Google.Apis.dll",
+			"./Decisions.GoogleDrive/obj/Google.Apis.Drive.v3.dll"
+        ],
+		"CliDlls": null,
+		"WebPages": null,
+		"SilverlightDlls": null,
+		"AgentDlls": null,
+		"InstallScript": null,
+		"SqlScripts": null,
+		"ObjectsToImport": null,
+		"MsSqlScript": null
+    },
+    "Version": "8.15.0",
+    "ImagePath": "./image.png",
+    "Description": "Module to manage files and folders in GoogleDrive."
+}
